@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">SeeNetwork</a>
+  </div>
+  {% if user.is_authenticated %}{% load notifications_tags %}
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item dropdown">
+        <a href="#" class="font-weight-bolder text-success nav-link dropdown-toggle" id="userMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-bell">
+            <span class='badge badge-pill'>
+              {% notifications_unread as unread_count %}
+              {% if unread_count %}
+                {{ unread_count }}
+              {% endif %}
+            </span>
+          </i> Notification 
+        </a>
+        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+          {% for notification in user.notifications.unread %}
+            Message from <b>{{ notification.actor }}</b>
+            <button class="dropdown-item" type="button">{{ notification.description }}</button>
+            {% if notification.verb == 'connection_request' %}
+              <button class="btn btn-primary" type="button" onclick="location.href='{% url 'confirm_request' notification.id %}'">Confirm</button>
+            {% endif %}
+            <div class="dropdown-divider"></div>
+          {% endfor %}
+        </div>
+      </li>
+    </ul>
+  {% endif %}
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="mainMenu">
+    {% if user.is_authenticated %}
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ user.username }}
+          </a>
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+            <a class="dropdown-item" href="#">My account</a>
+            <a class="dropdown-item" href="#">Change password</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+          </div>
+        </li>
+      </ul>
+    {% else %}
+      <form class="form-inline ml-auto">
+        <a href="{% url 'login' %}" class="btn btn-outline-secondary">Log in</a>
+        <a href="{% url 'signup' %}" class="btn btn-primary ml-2">Sign up</a>
+      </form>
+    {% endif %}
+  </div>
+</nav>
