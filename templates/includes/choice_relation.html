@@ -1,0 +1,21 @@
+<li>
+  Student ID: {{ user.student_id }}<br>
+  Name: {{ user.first_name }} {{ user.last_name }}<br>
+  Email: {{ user.email }}<br>
+  <div class="d-flex align-items-center">
+    <input type="hidden" name="user_id" value="{{ user.id }}">
+    <button type="submit" name="relationship" value="friend" class="btn btn-success btn-sm mr-2">
+      <i class="fa fa-plus-circle"></i> Add Friend
+    </button>
+    <select class="form-control" name="relationship">
+      <option value="" selected>Choose Relationship</option>
+      {% for choice in choices %}
+        <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</li>
+
+
+
+
