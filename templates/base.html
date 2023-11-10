@@ -12,12 +12,7 @@
   </head>
   <body>
     {% block body %}  <!-- HERE -->
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-          <a class="navbar-brand" href="{% url 'home' %}">Django Boards</a>
-        </div>
-        {% include 'includes/dropdown.html' %}
-      </nav>
+      {% include 'includes/nav.html' %}
       <div class="container">
         <ol class="breadcrumb my-4">
           {% block breadcrumb %}
