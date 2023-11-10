@@ -31,9 +31,8 @@ def home(request):
 
     # Generate the HTML for the network
     net.from_nx(G)
-    network_html = net.generate_html('templates/pvis_result.html')
-
-    return render(request, 'graph.html', {'network_html': network_html})
+    print()
+    return render(request, 'home.html', {'network_html': net.generate_html()})
 
 def search_users(request):
     query = request.GET.get('q', '')
@@ -93,27 +92,6 @@ def confirm_request(request, notification_id):
     return redirect('home')  # Redirect to the desired page after confirmation
 
 
-def network_view(request, user_id):
-    # Create a Network instance
-    net = Network()
-    G = networkx.Graph()
-    # Get all users and their relationships
-    users = User.objects.all()
-    relationships = Relationship.objects.all()
-
-    # Add nodes for users
-    for user in users:
-        G.add_node(user.id, label=user.username)
-
-    # Add edges for relationships
-    for relation in relationships:
-        G.add_edge(relation.user.id, relation.friend.id, label=relation.relationship_type)
-
-    # Generate the HTML for the network
-    net.from_nx(G)
-    network_html = net.save_graph('templates/pvis_result.html')
-
-    return render(request, 'graph.html', {'network_html': network_html})
 
 
 
