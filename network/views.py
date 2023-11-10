@@ -38,7 +38,7 @@ def search_users(request):
     
     # Perform the search based on the query.
     results = User.objects.filter(Q(username__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
-    return render(request, 'home.html', {'results': results, 'query': query, 'choices': Relation.choices})
+    return render(request, 'search_results.html', {'results': results, 'query': query, 'choices': Relation.choices})
 
 def send_friend_request(request, user_id):
     if request.method == 'POST':
