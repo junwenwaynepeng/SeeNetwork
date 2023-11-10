@@ -1,56 +1,58 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">SeeNetwork</a>
-  </div>
-  {% if user.is_authenticated %}{% load notifications_tags %}
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item dropdown">
-        <a href="#" class="font-weight-bolder text-success nav-link dropdown-toggle" id="userMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa-bell">
-            <span class='badge badge-pill'>
-              {% notifications_unread as unread_count %}
-              {% if unread_count %}
-                {{ unread_count }}
-              {% endif %}
-            </span>
-          </i> Notification 
-        </a>
-        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-          {% for notification in user.notifications.unread %}
-            Message from <b>{{ notification.actor }}</b>
-            <button class="dropdown-item" type="button">{{ notification.description }}</button>
-            {% if notification.verb == 'connection_request' %}
-              <button class="btn btn-primary" type="button" onclick="location.href='{% url 'confirm_request' notification.id %}'">Confirm</button>
-            {% endif %}
-            <div class="dropdown-divider"></div>
-          {% endfor %}
-        </div>
-      </li>
-    </ul>
-  {% endif %}
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="mainMenu">
-    {% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg" style="background-color: #2E5474;">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="{% url 'home' %}" style="color: white;">SeeNetwork</a>
+    <div class="collapse navbar-collapse" id="mainMenu">
+    </div>
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{ user.username }}
-          </a>
-          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-            <a class="dropdown-item" href="#">My account</a>
-            <a class="dropdown-item" href="#">Change password</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
-          </div>
-        </li>
+        {% if user.is_authenticated %}{% load notifications_tags %}
+          <li class="nav-item dropdown">
+            <a href="#" class="font-weight-bold text-success nav-link dropdown-toggle" id="userMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+              <i class="fa fa-bell" style="color: white;"></i>
+              <span class='badge badge-pill' style="background-color: #FFAD5A; color: #2E5474;">
+                {% notifications_unread as unread_count %}
+                {% if unread_count %}
+                  {{ unread_count }}
+                {% endif %}
+              </span> Notification
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+              {% for notification in user.notifications.unread %}
+                Message from <b>{{ notification.actor }}</b>
+                <button class="dropdown-item" type="button" style="background-color: #2E5474; color: white;">{{ notification.description }}</button>
+                {% if notification.verb == 'connection_request' %}
+                  <button class="btn btn-primary" type="button" onclick="location.href='{% url 'confirm_request' notification.id %}'" style="background-color: #FFAD5A; color: #2E5474;">Confirm</button>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+              {% endfor %}
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+              {{ user.username }}
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+              <a class="dropdown-item" href="#" style="color: #2E5474;">My account</a>
+              <a class="dropdown-item" href="#" style="color: #2E5474;">Change password</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'logout' %}" style="color: #2E5474;">Log out</a>
+            </div>
+          </li>
+        {% else %}
+          <form class="form-inline ml-auto">
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary" style="background-color: #2E5474; color: white;">Log in</a>
+            <a href="{% url 'signup' %}" class="btn btn-primary ml-2" style="background-color: #FFAD5A; color: #2E5474;">Sign up</a>
+          </form>
+        {% endif %}
       </ul>
-    {% else %}
-      <form class="form-inline ml-auto">
-        <a href="{% url 'login' %}" class="btn btn-outline-secondary">Log in</a>
-        <a href="{% url 'signup' %}" class="btn btn-primary ml-2">Sign up</a>
-      </form>
-    {% endif %}
+      {% if user.is_authenticcated %}
+        <form class="d-flex" method="get" action="{% url 'search_users' %}">
+          <input type="search" class="form-control me-2" id="search_query" name="q" placeholder="Search by Student ID, Name, or Email" aria-abel="Search" required>
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      {% endif %}
+    </div>
   </div>
 </nav>
