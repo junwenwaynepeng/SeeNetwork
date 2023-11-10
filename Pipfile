@@ -10,7 +10,6 @@ pyvis = "*"
 networkx = "*"
 pipfile = "*"
 django-widget-tweaks = "*"
-pexpect = "*"
 
 [dev-packages]
 
