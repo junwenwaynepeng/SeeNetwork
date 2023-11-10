@@ -1,5 +1,37 @@
 {% extends 'base.html' %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Search Users</li>
+{% endblock %}
+
 {% block content %}
-  <h1>Network Visualization</h1>
-  {% include 'pvis_result.html' %}
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <form method="get" action="{% url 'search_users' %}">
+        <div class="form-group">
+          <label for="search_query">Search by Student ID, Name, or Email</label>
+          <input type="text" class="form-control" id="search_query" name="q" placeholder="Enter search query" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+  </div>
+
+  {% if results %}
+    <div class="mt-4">
+      <h2>Search Results</h2>
+      <ul>
+        {% for user in results %}
+          <form method="post" action="{% url 'send_friend_request' user.id %}">
+            {% csrf_token %}
+            {% include 'includes/choice_relation.html' %}
+          </form>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  {% if user.is_authenticated %}
+    <a href="{% url 'network_view' user.id %}">draw connection</a>
+  {% endif %}
 {% endblock %}
