@@ -31,7 +31,6 @@ def home(request):
 
     # Generate the HTML for the network
     net.from_nx(G)
-    print()
     return render(request, 'home.html', {'network_html': net.generate_html()})
 
 def search_users(request):

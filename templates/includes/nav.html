@@ -47,7 +47,7 @@
           </form>
         {% endif %}
       </ul>
-      {% if user.is_authenticcated %}
+      {% if user.is_authenticated %}
         <form class="d-flex" method="get" action="{% url 'search_users' %}">
           <input type="search" class="form-control me-2" id="search_query" name="q" placeholder="Search by Student ID, Name, or Email" aria-abel="Search" required>
           <button class="btn btn-outline-success" type="submit">Search</button>

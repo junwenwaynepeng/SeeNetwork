@@ -31,5 +31,5 @@ urlpatterns = [
     path('send_friend_request/<int:user_id>/', views.send_friend_request, name='send_friend_request'),
     path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('confirm_request/<int:notification_id>/', views.confirm_request, name='confirm_request'),
-    path('graph/<int:user_id>/', views.network_view, name='network_view'),
+
 ]
