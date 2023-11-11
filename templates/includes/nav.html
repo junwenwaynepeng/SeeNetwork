@@ -15,8 +15,10 @@
                 {% notifications_unread as unread_count %}
                 {% if unread_count %}
                   {{ unread_count }}
+                {% else %}
+                  0
                 {% endif %}
-              </span> Notification
+              </span>
             </a>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
               {% for notification in user.notifications.unread %}

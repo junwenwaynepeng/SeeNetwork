@@ -10,6 +10,7 @@ pyvis = "*"
 networkx = "*"
 pipfile = "*"
 django-widget-tweaks = "*"
+bs4 = "*"
 
 [dev-packages]
 

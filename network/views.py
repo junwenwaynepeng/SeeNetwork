@@ -9,11 +9,30 @@ from django.db.models.signals import post_save
 from django.contrib import messages
 from pyvis.network import Network
 import networkx
+from bs4 import BeautifulSoup
+import re
 
 # Create your views here.
 
 
 def home(request):
+    def clean_network_html(html_content: str, del_html_by_pattern: list):
+        # Parse the HTML content with BeautifulSoup
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # Define a regular expression pattern for "bootstrap"
+        for pattern in del_html_by_pattern:
+            bootstrap_pattern = re.compile(pattern, re.IGNORECASE)
+
+            # Find all <link> tags and attributes containing "bootstrap" and remove them
+            for link_element in soup.find_all('link', href=bootstrap_pattern):
+                link_element.decompose()
+
+            # Find all <script> tags and attributes containing "bootstrap" and remove them
+            for script_element in soup.find_all('script', src=bootstrap_pattern):
+                script_element.decompose()
+        print(str(soup))
+        return str(soup)
     # Create a Network instance
     net = Network()
     G = networkx.Graph()
@@ -31,7 +50,9 @@ def home(request):
 
     # Generate the HTML for the network
     net.from_nx(G)
-    return render(request, 'home.html', {'network_html': net.generate_html()})
+    network_html = net.generate_html()
+    network_html = clean_network_html(network_html,['bootstrap'])
+    return render(request, 'home.html', {'network': network_html})
 
 def search_users(request):
     query = request.GET.get('q', '')

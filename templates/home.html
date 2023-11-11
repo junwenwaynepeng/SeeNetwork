@@ -2,5 +2,7 @@
 
 {% block breadcrumb %}
   <li class="breadcrumb-item active">Network Visualization</li>
-  {% include 'pvis_result.html' %}
 {% endblock %}
+{% block content %}
+  {{ network | safe }}
+{% endblock %} 
