@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load user_filter %}
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+    <h2>User Profile</h2>
+    <button type="button" class="btn btn-primary" onclick="location.href='{% url 'profile_view' %}'" value=False>Edit Profile</button>
+
+    {% if show_current_profile %}
+        <div>
+            {% for field in user|get_fields %}
+                <p><strong>{{ field.verbose_name }}:</strong> {{ user|get_attribute:field.name }}</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div>
+            <form method="post" action="" id="profileForm">
+                {% csrf_token %}
+                
+                <!-- Use Django form to automatically render fields -->
+                {{ profile_form.as_p }}
+
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </form>
+        </div>
+    {% endif %}
+
+    <form method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Toggle Profile</button>
+    </form>
+{% endblock %}
