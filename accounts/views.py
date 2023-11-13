@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login
-from .forms import SignUpForm
+from .forms import SignUpForm, UserProfileForm
 
 def signup(request):
 	if request.method == 'POST':
@@ -13,3 +13,16 @@ def signup(request):
 	else:
 		form = SignUpForm()
 	return render(request, 'signup.html', {'form': form})
+
+def profile_view(request):
+    user = request.user
+    profile_form = UserProfileForm(instance=user)
+    print(request.GET)
+    if request.method == 'GET':
+    	show_current_profile=True
+    if request.method == 'POST':
+        profile_form = UserProfileForm(request.POST, instance=user)
+        if profile_form.is_valid():
+            profile_form.save()
+    
+    return render(request, 'profile.html', {'user': user, 'profile_form': profile_form, 'show_current_profile': show_current_profile})
