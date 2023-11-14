@@ -14,10 +14,9 @@ def signup(request):
 		form = SignUpForm()
 	return render(request, 'signup.html', {'form': form})
 
-def profile_view(request):
+def profile_view(request, user_slug):
     user = request.user
     profile_form = UserProfileForm(instance=user)
-    print(request.GET)
     if request.method == 'GET':
     	show_current_profile=True
     if request.method == 'POST':
@@ -25,4 +24,4 @@ def profile_view(request):
         if profile_form.is_valid():
             profile_form.save()
     
-    return render(request, 'profile.html', {'user': user, 'profile_form': profile_form, 'show_current_profile': show_current_profile})
+    return render(request, 'profile.html', {'user': user, 'profile_form': profile_form, 'show_current_profile': show_current_profile, 'slug': user_slug})

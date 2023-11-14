@@ -7,10 +7,13 @@ from .models import Relationship, FriendRequest, Relation
 from notifications.signals import notify
 from django.db.models.signals import post_save
 from django.contrib import messages
+from django.urls import reverse
+# import packages for network drawing
 from pyvis.network import Network
 import networkx
 from bs4 import BeautifulSoup
 import re
+
 
 # Create your views here.
 
@@ -31,8 +34,8 @@ def home(request):
             # Find all <script> tags and attributes containing "bootstrap" and remove them
             for script_element in soup.find_all('script', src=bootstrap_pattern):
                 script_element.decompose()
-        print(str(soup))
         return str(soup)
+
     # Create a Network instance
     net = Network()
     G = networkx.Graph()
@@ -51,14 +54,14 @@ def home(request):
     # Generate the HTML for the network
     net.from_nx(G)
     network_html = net.generate_html()
-    network_html = clean_network_html(network_html,['bootstrap'])
+    network_html = clean_network_html(network_html, ['bootstrap'])
     return render(request, 'home.html', {'network': network_html})
 
 def search_users(request):
     query = request.GET.get('q', '')
     
     # Perform the search based on the query.
-    results = User.objects.filter(Q(username__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
+    results = User.objects.filter(Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(nick_name__icontains=query) | Q(email__icontains=query))
     return render(request, 'search_results.html', {'results': results, 'query': query, 'choices': Relation.choices})
 
 def send_friend_request(request, user_id):

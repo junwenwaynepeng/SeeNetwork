@@ -3,11 +3,11 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 class Relation(models.TextChoices):
-		friend = "friend", "Friend"
-		discussion = "discussion", "Discussion"
-		learn = "learn", "I learn from "
-		teach = "teach", "I taught"
-		other = "other", "Other"
+	friend = "friend", "Friend"
+	discussion = "discussion", "Discussion"
+	learn = "learn", "I learn from "
+	teach = "teach", "I taught"
+	other = "other", "Other"
 
 class FriendRequest(models.Model):
 	sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_requests')

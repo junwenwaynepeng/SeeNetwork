@@ -11,6 +11,8 @@ networkx = "*"
 pipfile = "*"
 django-widget-tweaks = "*"
 bs4 = "*"
+crispy-bootstrap5 = "*"
+bokeh = "*"
 
 [dev-packages]
 

@@ -1,8 +1,11 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+{% load crispy_forms_tags %} 
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <title>{% block title %}Django Boards{% endblock %}</title>
+    {% include 'includes/seo.html' %}
     {% include 'includes/stylesheets.html' %}
 
 

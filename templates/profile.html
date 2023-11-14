@@ -3,22 +3,84 @@
 {% block title %}User Profile{% endblock %}
 
 {% block content %}
-    <h2>User Profile</h2>
-    <button type="button" class="btn btn-primary" onclick="location.href='{% url 'profile_view' %}'" value=False>Edit Profile</button>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Section -->
+            <div class="col-md-6">
+                <div class="card w-50">
+                    <div class="card-body">
+                        <h5 class="card-title">基本資料</h5>
 
-    <div>
-        <form method="post" action="" id="profileForm">
-            {% csrf_token %}
-            
-            <!-- Use Django form to automatically render fields -->
-            {{ profile_form.as_p }}
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">學生 ID</label>
+                            <p class="form-control-plaintext">{{ user.student_id }}</p>
+                        </div>
 
-            <button type="submit" class="btn btn-success">Save Changes</button>
-        </form>
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">姓名</label>
+                            <p class="form-control-plaintext">{{ user.first_name }}, {{ user.last_name }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nick_name" class="form-label">a.k.a.</label>
+                            <p class="form-control-plaintext">{{ user.nick_name }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">性別</label>
+                            <p class="form-control-plaintext">{{ user.get_gender_display }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="department" class="form-label">系所</label>
+                            <p class="form-control-plaintext">{{ user.get_department_display }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">電子郵件</label>
+                            <p class="form-control-plaintext">{{ user.email }}</p>
+                        </div>
+                        {% if slug == user.slug %}
+                            <div class="text-right">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">編輯</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Content for the right section goes here -->
+                <h5 class="card-title">Other information</h5>
+            </div>
+        </div>
+        
     </div>
 
-    <form method="post" action="">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Toggle Profile</button>
-    </form>
+    {% if slug == user.slug %}
+    {% load crispy_forms_tags %}  
+        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ profile_form|crispy }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    {% endif %}
+
+
 {% endblock %}

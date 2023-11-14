@@ -7,16 +7,13 @@
 
 {% block content %}
   {% if results %}
-    <div class="mt-4">
-      <h2>Search Results</h2>
-      <ul>
-        {% for user in results %}
-          <form method="post" action="{% url 'send_friend_request' user.id %}">
-            {% csrf_token %}
-            {% include 'includes/choice_relation.html' %}
-          </form>
-        {% endfor %}
-      </ul>
+    <div class="card-group">
+      {% for user in results %}
+        <form method="post" action="{% url 'send_friend_request' user.id %}">
+          {% csrf_token %}
+          {% include 'includes/choice_relation.html' %}
+        </form>
+      {% endfor %}
     </div>
   {% endif %}
 {% endblock %}
