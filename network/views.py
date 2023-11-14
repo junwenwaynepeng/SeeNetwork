@@ -89,14 +89,11 @@ def send_friend_request(request, user_id):
                     notify.send(sender, recipient=receiver, verb=f'{sender} send you a {relationship_type} confirm request')
             except:
             	pass
-    return redirect('home')
+    return redirect('#')
 
 def confirm_request(request, notification_id):
     notification = request.user.notifications.get(id=notification_id)	
     notification.mark_as_read()	
-    # Check if the notification is a friend request
-    # Update the notification to "read"
-
 
     # Create a relationship using the instance of FriendRequest
     friend_request = FriendRequest.objects.get(id=notification.target.id)
