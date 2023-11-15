@@ -59,7 +59,7 @@ body {
     border-radius: 10px;
     -webkit-box-shadow: 0 5px 20px -3px rgba(0, 0, 0, 0.16);
     box-shadow: 0 5px 20px -3px rgba(0, 0, 0, 0.16);
-    border: 0;
+    border: 0px;
     max-width: 400px;
 }
 
@@ -77,10 +77,6 @@ body {
     position: absolute;
     top: -30px;
     left: calc(50% - 7px);
-    border-top: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 15px solid #fff;
-    border-left: 15px solid transparent;
 }
 
 .notification-ui_dd .notification-ui_dd-header {

@@ -27,19 +27,25 @@
               </div>
               <div class="notification-ui_dd-content">
                 {% for notification in user.notifications.unread %}
-                  <div class="notification-list notification-list--unread">
+                  <div class="notification-list notification-list--read">
                     <div class="notification-list_img">
                       <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user">
                     </div>
                     <div class="notification-list_detail">
-                      <p><a href="{% url 'profile_view' user.slug %}">{{ notification.actor }}</a>{{ notification.description }}</p>
+                      <p><a href="{% url 'profile_view' notification.actor.slug %}">{{ notification.actor }}</a>{{ notification.description }}</p>
                       <p><small>{{ notification.timestemp }}</small></p>
                     </div>
                     <div class="notification-list_feature-img">
               
                       {% if notification.verb == 'connection_request' %}
-                        <p><a class="btn btn-primary" href="{% url 'confirm_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">Confirm</a></p>
-                        <p><a class="btn btn-secondary ignore-btn" href="{% url 'ignore_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">Ignore</a></p>
+                        <p>
+                          <a class="btn btn-primary btn-sm" href="{% url 'confirm_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">
+                            <i class="fa fa-check"></i>
+                          </a>
+                          <a class="btn btn-secondary btn-sm" href="{% url 'ignore_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">
+                            <i class="fa fa-times"></i>
+                          </a>
+                        </p>
                       {% endif %}
                     </div>
                   {% endfor %}

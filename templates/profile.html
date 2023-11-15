@@ -13,34 +13,34 @@
 
                         <div class="mb-3">
                             <label for="student_id" class="form-label">學生 ID</label>
-                            <p class="form-control-plaintext">{{ user.student_id }}</p>
+                            <p class="form-control-plaintext">{{ profile_owner.student_id }}</p>
                         </div>
 
                         <div class="mb-3">
                             <label for="first_name" class="form-label">姓名</label>
-                            <p class="form-control-plaintext">{{ user.first_name }}, {{ user.last_name }}</p>
+                            <p class="form-control-plaintext">{{ profile_owner.first_name }}, {{ profile_owner.last_name }}</p>
                         </div>
 
                         <div class="mb-3">
                             <label for="nick_name" class="form-label">a.k.a.</label>
-                            <p class="form-control-plaintext">{{ user.nick_name }}</p>
+                            <p class="form-control-plaintext">{{ profile_owner.nick_name }}</p>
                         </div>
 
                         <div class="mb-3">
                             <label for="gender" class="form-label">性別</label>
-                            <p class="form-control-plaintext">{{ user.get_gender_display }}</p>
+                            <p class="form-control-plaintext">{{ profile_owner.get_gender_display }}</p>
                         </div>
 
                         <div class="mb-3">
                             <label for="department" class="form-label">系所</label>
-                            <p class="form-control-plaintext">{{ user.get_department_display }}</p>
+                            <p class="form-control-plaintext">{{ profile_owner.get_department_display }}</p>
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label">電子郵件</label>
-                            <p class="form-control-plaintext">{{ user.email }}</p>
+                            <p class="form-control-plaintext">{{ profile_owner.email }}</p>
                         </div>
-                        {% if slug == user.slug %}
+                        {% if profile_owner.slug == user.slug %}
                             <div class="text-right">
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">編輯</button>
                             </div>
@@ -56,7 +56,7 @@
         
     </div>
 
-    {% if slug == user.slug %}
+    {% if profile_owner.slug  == user.slug %}
     {% load crispy_forms_tags %}  
         <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
           <div class="modal-dialog">

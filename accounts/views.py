@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login
 from .forms import SignUpForm, UserProfileForm
+from .models import CustomUser as User
 
 def signup(request):
 	if request.method == 'POST':
@@ -16,7 +17,8 @@ def signup(request):
 
 def profile_view(request, user_slug):
     user = request.user
-    profile_form = UserProfileForm(instance=user)
+    profile_owner = get_object_or_404(User, slug=user_slug)
+    profile_form = UserProfileForm(instance=profile_owner)
     if request.method == 'GET':
     	show_current_profile=True
     if request.method == 'POST':
@@ -24,4 +26,4 @@ def profile_view(request, user_slug):
         if profile_form.is_valid():
             profile_form.save()
     
-    return render(request, 'profile.html', {'user': user, 'profile_form': profile_form, 'show_current_profile': show_current_profile, 'slug': user_slug})
+    return render(request, 'profile.html', {'user': user, 'profile_owner': profile_owner, 'profile_form': profile_form, 'show_current_profile': show_current_profile, 'slug': user_slug})

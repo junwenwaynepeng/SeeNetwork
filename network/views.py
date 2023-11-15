@@ -36,6 +36,7 @@ def home(request):
             for script_element in soup.find_all('script', src=bootstrap_pattern):
                 script_element.decompose()
         return str(soup)
+    def single_target
 
     # Create a Network instance
     net = Network()
@@ -51,6 +52,8 @@ def home(request):
     # Add edges for relationships
     for relation in relationships:
         G.add_edge(relation.user.id, relation.friend.id, label=relation.relationship_type)
+    if not user.is_superuser:
+        G = G.path_graph(2)
 
     # Generate the HTML for the network
     net.from_nx(G)
