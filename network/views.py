@@ -36,7 +36,21 @@ def home(request):
             for script_element in soup.find_all('script', src=bootstrap_pattern):
                 script_element.decompose()
         return str(soup)
-    def single_target
+    def find_nodes_within_distance(source: set, relationships: set, edges:set, length: int):
+        if length==0:
+            return list(source), list(relationships)
+        else:
+            old_edges = set(edges)
+            for edge in old_edges:
+                if (edge[0], edge[3]) in source:
+                    source.add((edge[1], edge[4]))
+                    relationships.add(edge)
+                    edges.remove(edge)
+                if (edge[1], edge[4]) in source:
+                    source.add((edge[0], edge[3]))
+                    relationships.add(edge)
+                    edges.remove(edge)
+            return find_nodes_within_distance(source, relationships, edges, length-1)
 
     # Create a Network instance
     net = Network()
@@ -44,16 +58,27 @@ def home(request):
     # Get all users and their relationships
     users = User.objects.all()
     relationships = Relationship.objects.all()
+    user = request.user
 
-    # Add nodes for users
-    for user in users:
-        G.add_node(user.id, label=user.username)
+    if user.is_superuser:
+        # Add nodes for users
+        for user in users:
+            G.add_node(user.id, label=user.username)
 
-    # Add edges for relationships
-    for relation in relationships:
-        G.add_edge(relation.user.id, relation.friend.id, label=relation.relationship_type)
-    if not user.is_superuser:
-        G = G.path_graph(2)
+        # Add edges for relationships
+        for relation in relationships:
+            G.add_edge(relation.user.id, relation.friend.id, label=relation.relationship_type)
+    else:
+        edges = {(relation.user.id, relation.friend.id, relation.relationship_type, relation.user.username, relation.friend.username) for relation in relationships}
+        source, local_relationships = find_nodes_within_distance({(user.id, user.username)}, set(), edges, 2)
+        print(source, local_relationships)
+        try:
+            for node in source:
+                G.add_node(node[0], label=node[1])
+            for relation in local_relationships:
+                G.add_edge(relation[0], relation[1], label=relation[2])
+        except Exception as e:
+            print(e)
 
     # Generate the HTML for the network
     net.from_nx(G)
