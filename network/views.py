@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from accounts.models import CustomUser as User
 from django.db.models import Q
-from .models import Relationship, FriendRequest, Relation
+from .models import Relationship, FriendRequest, Relation, NotificationVerbs
 from notifications.signals import notify
 from django.db.models.signals import post_save
 from django.contrib import messages
@@ -68,35 +69,41 @@ def send_friend_request(request, user_id):
     if request.method == 'POST':
         # Get the selected relationship type from the form
         relationship_type = request.POST.get('relationship')
-
+        notification_desicription = {choice[0]: choice[1] for choice in NotificationVerbs.choices}
+        notification_verbs = lambda relation_type: 'connection_request' if relationship_type in [notif[0] for notif in NotificationVerbs.choices[0:3]] else relationship_type
         if relationship_type:
             # Create a friend request with the selected relationship type
-            try:
-                # Get the sender and receiver users
-                sender = request.user
-                receiver = User.objects.get(id=user_id)
+            # Get the sender and receiver users
+            sender = request.user
+            receiver = User.objects.get(id=user_id)
 
-                # Check if a friend request already exists
-                friend_request = FriendRequest.objects.filter(
+            # Check if a friend request already exists
+            friend_request = FriendRequest.objects.filter(
+                sender=sender, receiver=receiver, relationship_type=relationship_type
+            ).first()
+            if not friend_request:
+                # Create a new friend request
+                friend_request = FriendRequest(
                     sender=sender, receiver=receiver, relationship_type=relationship_type
-                ).first()
-                if not friend_request:
-                    # Create a new friend request
-                    friend_request = FriendRequest(
-                        sender=sender, receiver=receiver, relationship_type=relationship_type
+                )
+                friend_request.save()
+                print(notification_verbs(relationship_type))
+                notify.send(
+                    sender, 
+                    recipient=receiver, 
+                    verb=f'{notification_verbs(relationship_type)}',
+                    description=f'{sender} send you a {notification_desicription[relationship_type]}',
+                    action_object=friend_request
                     )
-                    friend_request.save()
-                    notify.send(sender, recipient=receiver, verb=f'{sender} send you a {relationship_type} confirm request')
-            except:
-            	pass
-    return redirect('#')
+
+    return redirect('home')
 
 def confirm_request(request, notification_id):
     notification = request.user.notifications.get(id=notification_id)	
     notification.mark_as_read()	
 
     # Create a relationship using the instance of FriendRequest
-    friend_request = FriendRequest.objects.get(id=notification.target.id)
+    friend_request = FriendRequest.objects.get(id=notification.action_object.id)
     friend_request.status = 'confirm'  # Change status to "confirm"
     friend_request.save()  # Save the updated FriendRequest
     Relationship.objects.create(
@@ -108,10 +115,19 @@ def confirm_request(request, notification_id):
 
     # Display a success message
     messages.success(request, 'Friend request confirmed.')
+    # Redirect to the desired page after confirmation
 
-    return redirect('home')  # Redirect to the desired page after confirmation
+    return HttpResponseRedirect(request.path_info)
 
+def ignore_request(request, notification_id):
+    notification = request.user.notifications.get(id=notification_id)   
+    notification.mark_as_read()
+    return HttpResponseRedirect(request.path_info)
 
+def mark_as_read(request, notification_id):
+    notification = request.user.notifications.filter(verb__in=['update', 'confirm'])
+    for notification in update_confirm_notifications:
+        notification.mark_as_read()
 
 
 

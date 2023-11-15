@@ -42,7 +42,7 @@ class CustomUser(AbstractUser):
     display_nick_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     display_gender = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     display_department = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
-    slug = models.SlugField(max_length=25, verbose_name='User Slug', default=student_id, unique=True)
+    slug = models.SlugField(max_length=25, verbose_name='User Slug', unique=True)
     def __str__(self):
         return self.username  # You can customize how user objects are displayed.
 
