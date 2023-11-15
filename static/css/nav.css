@@ -13,6 +13,26 @@ body {
     display: none;
 }
 
+.notification-ui a,
+.nav-link.dropdown-toggle {
+    padding: 10px 20px; /* Adjust the padding values as needed */
+    display: flex;
+    align-items: center;
+}
+
+.notification-ui .fa-bell,
+.nav-link.dropdown-toggle .fa-user {
+    margin-right: 10px; /* Adjust the margin if necessary */
+}
+
+/* Optional: Add hover effect */
+.notification-ui a:hover,
+.nav-link.dropdown-toggle:hover {
+    background-color: #1D5879;
+    color: white;
+    text-decoration: none;
+}
+
 .notification-ui_icon {
     position: relative;
 }
