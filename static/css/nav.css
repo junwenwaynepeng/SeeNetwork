@@ -15,7 +15,7 @@ body {
 
 .notification-ui a,
 .nav-link.dropdown-toggle {
-    padding: 10px 20px; /* Adjust the padding values as needed */
+    padding: 8px 15px; /* Adjust the padding values as needed */
     display: flex;
     align-items: center;
 }
@@ -146,4 +146,10 @@ body {
     position: fixed;
     left: 15px;
     bottom: 15px
+}
+
+li.nav-item {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
