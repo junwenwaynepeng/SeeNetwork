@@ -20,12 +20,17 @@
     <link rel="stylesheet" href="{% static 'css/dark-light.css' %}">
     <link rel="stylesheet" href="{% static 'css/nav.css' %}">
     {% block stylesheet %}{% endblock %}
+    <style>
+      body {
+        font-family: 'sans-hant';
+      }
+    </style>
   </head>
   <body>
     {% block body %}  <!-- HERE -->
       {% include 'includes/nav.html' %}
       <div class="container">
-        <ol class="breadcrumb my-4">
+        <ol class="breadcrumb my-4 adaptive">
           {% block breadcrumb %}
           {% endblock %}
         </ol>

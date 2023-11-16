@@ -1,15 +1,71 @@
 /* Light mode */
 @media (prefers-color-scheme: light) {
     body {
-        background-color: white;
-        color: black;
+        background: #809DA5;
+    }
+    .breadcrumb.adaptive {
+        color:;
+    }
+    .container.adaptive{
+        background: #809DA5;
+    }
+    .container-fluid.adaptive {
+        background: #809DA5;
+        color: #012B37;
+    }
+    .card.profile-adaptive {
+        background: #DF8D80;
+        color: #809DA5;
+    }
+    .card-title.profile-adaptive {
+        background: ;
+        color: #4E3700;
+    }
+    .form-label.profile-adaptive {
+        background: ;
+        color: #DFC380;
+    }
+    .fw-normal.profile-adaptive {
+        color: #012631;
+    }
+    .dropdown-menu.notification-ui_dd.adaptive {
+        background-color: #FFEDC4; 
+        color: #012B37; 
     }
 }
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
     body {
-        background-color: black;
-        color: white;
+        background: #012A35;
+    }
+    .breadcrumb.adaptive {
+        color:;
+    }
+    .container.adaptive{
+        background: #012A35;
+    }
+    .container-fluid.adaptive {
+        background: #012A35;
+        color: #FFEDC3;
+    }
+    .card.profile-adaptive {
+        background: #FFEDC3;
+        color: #012A35;
+    }
+    .card-title.profile-adaptive {
+        background: ;
+        color: #560C00;
+    }
+    .form-label.profile-adaptive {
+        background: ;
+        color: #D8BB77;
+    }
+    .fw-normal.profile-adaptive {
+        color: #012A35;
+    }
+    .dropdown-menu.notification-ui_dd.adaptive {
+        background-color: white; 
+        color: #012B37; 
     }
 }
