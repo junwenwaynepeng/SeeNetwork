@@ -1,18 +1,11 @@
 <div class="card mb-3">
     <div class="card-body">
         <h5 class="card-title">Student ID: {{ user.student_id }}</h5>
-        <p class="card-text">Name: {{ user.first_name }} {{ user.last_name }}</p>
+        <p class="card-text">Name: {{ user.first_name }}, {{ user.last_name }}</p>
         <p class="card-text">Email: {{ user.email }}</p>
         <div class="d-flex align-items-center">
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-            <select class="form-select" name="relationship" aria-label="Choose Relationship">
-                <option value="" selected>Choose Relationship</option>
-                {% for choice in choices %}
-                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" name="relationship" value="friend" class="btn btn-success btn-sm ms-2">
-                <i class="fa fa-plus-circle"></i> Add Friend
+            <button type="submit" name="relationship" value="friend" class="btn btn-success btn-sm ms-2 {% if user in request_has_sent %}disable{% endif %}">
+                <i class="fa fa-plus-circle"></i> follow
             </button>
             <a href="{% url 'profile_view' user.slug %}" class="btn btn-primary btn-sm ms-2" role="button">
                 <i class="fa fa-eye"></i> Check Detail
