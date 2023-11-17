@@ -3,11 +3,11 @@
         <h5 class="card-title">Student ID: {{ user.student_id }}</h5>
         <p class="card-text">Name: {{ user.first_name }}, {{ user.last_name }}</p>
         <p class="card-text">Email: {{ user.email }}</p>
-        <div class="d-flex align-items-center">
-            <button type="submit" name="relationship" value="friend" class="btn btn-success btn-sm ms-2 {% if user in request_has_sent %}disable{% endif %}">
-                <i class="fa fa-plus-circle"></i> follow
+        <div id="friend-request" class="d-flex align-items-center">
+            <button id="friend-request-{{user.id}}" type="button" onclick="sendFriendRequest({{user.id}})" class="btn btn-success btn-sm ms-2 {% if user in request_has_sent %}disable{% endif %}">
+                <i id="friend-request-icon-{{user.id}}" class="fa fa-plus-circle"></i><span id="friend-request-text-{{user.id}}"> follow</span>
             </button>
-            <a href="{% url 'profile_view' user.slug %}" class="btn btn-primary btn-sm ms-2" role="button">
+            <a href="{% url 'profile_view' user.slug  %}" class="btn btn-primary btn-sm ms-2" role="button">
                 <i class="fa fa-eye"></i> Check Detail
             </a>
         </div>

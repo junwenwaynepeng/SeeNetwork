@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from accounts.models import CustomUser as User
@@ -97,7 +97,7 @@ def search_users(request):
             request_has_sent.append(result)
         if Relationship.objects.filter(user=user.id, friend=result.id).first():
             friends.append(result)
-        print(friends)
+
     return render(
             request, 
             'search_results.html', 
@@ -106,7 +106,6 @@ def search_users(request):
                 'query': query, 
                 'request_has_sent': request_has_sent,
                 'friends': friends,
-                'current_page': request.path_info
                 })
 
 def send_friend_request(request, user_id):
@@ -116,7 +115,7 @@ def send_friend_request(request, user_id):
         # Get the sender and receiver users
         sender = request.user
         receiver = User.objects.get(id=user_id)
-
+        print(request)
         # Check if a friend request already exists
         friend_request = FriendRequest.objects.filter(
             sender=sender, receiver=receiver
@@ -134,7 +133,9 @@ def send_friend_request(request, user_id):
                 description=f'{sender} send you a following request',
                 action_object=friend_request
                 )
-    return HttpResponseRedirect(request.path_info)
+        path = re.sub(f'/{user_id}','',request.path_info)
+        response_data = {'message': 'Friend request sent successfully'}
+    return JsonResponse(response_data)
 
 def confirm_request(request, notification_id):
     notification = request.user.notifications.get(id=notification_id)	
@@ -149,7 +150,7 @@ def confirm_request(request, notification_id):
         friend=friend_request.sender,
     )
     # Redirect to the desired page after confirmation
-    return HttpResponseRedirect(request.path_info)
+    return redirect(request.path_info)
 
 def ignore_request(request, notification_id):
     notification = request.user.notifications.get(id=notification_id)   

@@ -9,11 +9,38 @@
   {% if results %}
     <div class="card-group">
       {% for user in results %}
-        <form method="post" action="{% url 'send_friend_request' user.id %}">
+        <form id="search-result-{{user.id}}" method="post" action="{% url 'send_friend_request' user.id%}">
           {% csrf_token %}
           {% include 'includes/choice_relation.html' %}
         </form>
       {% endfor %}
     </div>
   {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function sendFriendRequest(userId) {
+        console.log(userId)
+        var formId = 'search-result-' + userId;
+        var formData = $('#' + formId).serialize();
+
+        const button = document.getElementById("send-friend-request" + userId); 
+        console.log(button)
+        button.disabled = true;
+        $.ajax({
+            type: 'POST',
+            url: '/send_friend_request/' + userId + '/',  // Replace with your actual endpoint
+            data: formData,
+            success: function(response) {
+                // Handle the server response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle errors here
+                console.error(error);
+            }
+        });
+    }
+</script>
 {% endblock %}
