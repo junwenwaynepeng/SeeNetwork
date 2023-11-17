@@ -4,8 +4,7 @@ from .models import Relationship, FriendRequest
 
 @admin.register(Relationship)
 class RelationshipAdmin(admin.ModelAdmin):
-    list_display = ('user', 'friend', 'relationship_type')
-    list_filter = ('relationship_type',)
+    list_display = ('user', 'friend')
     search_fields = ('user__username', 'friend__username')
 
 
