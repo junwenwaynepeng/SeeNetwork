@@ -4,7 +4,7 @@
         <p class="card-text">Name: {{ user.first_name }}, {{ user.last_name }}</p>
         <p class="card-text">Email: {{ user.email }}</p>
         <div id="friend-request" class="d-flex align-items-center">
-            <button id="friend-request-{{user.id}}" type="button" onclick="sendFriendRequest({{user.id}})" class="btn btn-success btn-sm ms-2 {% if user in request_has_sent %}disable{% endif %}">
+            <button id="friend-request-button-{{user.id}}" type="button" onclick="sendFriendRequest({{user.id}})" class="btn btn-success btn-sm ms-2 {% if user in request_has_sent %}disable{% endif %}">
                 <i id="friend-request-icon-{{user.id}}" class="fa fa-plus-circle"></i><span id="friend-request-text-{{user.id}}"> follow</span>
             </button>
             <a href="{% url 'profile_view' user.slug  %}" class="btn btn-primary btn-sm ms-2" role="button">
