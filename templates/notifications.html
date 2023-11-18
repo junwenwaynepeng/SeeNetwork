@@ -1,0 +1,40 @@
+<!-- notifications.html -->
+
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Notifications</li>
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <h1>Notifications</h1>
+    
+    <!-- Unread notifications -->
+    <h2>Unread Notifications</h2>
+    <ul>
+      {% for notification in user.notifications.unread %}
+        <li>
+          <p>
+            <a href="{% url 'profile_view' notification.actor.slug %}">{{ notification.actor }}</a>: {{ notification.description }}
+          </p>
+           <p><small>{{ notification.timestemp }}</small></p>
+        </li>
+        <!-- Add more details as needed -->
+      {% endfor %}
+    </ul>
+
+    <!-- Unread notifications -->
+    <h2>Read Notifications</h2>
+    <ul>
+      {% for notification in user.notifications.read %}
+        <li>
+          <p>
+            <a href="{% url 'profile_view' notification.actor.slug %}">{{ notification.actor }}</a>: {{ notification.description }}
+          </p>
+           <p><small>{{ notification.timestemp }}</small></p>
+        </li>
+        <!-- Add more details as needed -->
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
