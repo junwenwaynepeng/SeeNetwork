@@ -83,30 +83,5 @@
 
 
 {% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Get the dropdown menu element
-    var notificationDropdown = document.getElementById('notificationDropdown');
 
-    // Add an event listener to the dropdown menu to mark notifications as read when opened
-    notificationDropdown.addEventListener('click', function () {
-        // Perform an AJAX request to mark notifications as read
-        // Replace 'mark_as_read_url' with the actual URL in your Django project
-        fetch('{% url 'mark_as_read' %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({}),
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Update the UI or perform additional actions if needed
-                console.log('Notifications marked as read:', data);
-            })
-            .catch(error => console.error('Error marking notifications as read:', error));
-    });
-});
-</script>
 {% endblock %}

@@ -20,31 +20,48 @@
 
 {% block scripts %}
 <script>
-    function sendFriendRequest(userId) {
+    function friendRequest(userId) {
         console.log(userId)
         var formId = 'search-result-' + userId;
         var formData = $('#' + formId).serialize();
         const button = document.getElementById("friend-request-button-" + userId);
         const icon = document.getElementById("friend-request-icon-" + userId);
         const text = document.getElementById("friend-request-text-" + userId);
-        console.log(button)
         icon.classList.toggle('fa-plus-circle');
         icon.classList.toggle('fa-minus-circle');
-        document.getElementById("friend-request-button-{{userId}}").onclick = function (){alert('foo');};
-        text.textContent = icon.classList.contains('fa-plus-circle') ? "Follow" : "Unfollow";
-        $.ajax({
-            type: 'POST',
-            url: '/send_friend_request/' + userId + '/',  // Replace with your actual endpoint
-            data: formData,
-            success: function(response) {
-                // Handle the server response here
-                console.log(response);
-            },
-            error: function(error) {
-                // Handle errors here
-                console.error(error);
-            }
-        });
+
+        var isFollow = text.innerHTML.trim().toLowerCase() === 'follow';
+        if (isFollow) {
+          $.ajax({
+              type: 'POST',
+              url: '/send_friend_request/' + userId,  // Replace with your actual endpoint
+              data: formData,
+              success: function(response) {
+                  // Handle the server response here
+                  console.log(response);
+              },
+              error: function(error) {
+                  // Handle errors here
+                  console.error(error);
+              }
+          });
+        } else {
+          $.ajax({
+              type: 'POST',
+              url: '/unsend_friend_request/' + userId,  // Replace with your actual endpoint
+              data: formData,
+              success: function(response) {
+                  // Handle the server response here
+                  console.log(response);
+              },
+              error: function(error) {
+                  // Handle errors here
+                  console.error(error);
+              }
+          });
+        }
+        text.textContent = icon.classList.contains('fa-plus-circle') ? " Follow " : " Unfollow ";
+        
     }
 </script>
 {% endblock %}

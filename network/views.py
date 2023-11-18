@@ -119,10 +119,14 @@ def send_friend_request(request, user_id):
             ).first()
             if not friend_request or (friend_request.status==None):
                 # Create a new friend request
-                friend_request = FriendRequest(
-                    sender=sender, receiver=receiver, status='pending'
-                )
-                friend_request.save()
+                if not friend_request:
+                    friend_request = FriendRequest(
+                        sender=sender, receiver=receiver, status='pending'
+                    )
+                    friend_request.save()
+                else:
+                    friend_request.status='pending'
+                    friend_request.save()
 
                 # check if the sender is in block list
                 if not friend_request.block_sender:
@@ -142,30 +146,28 @@ def send_friend_request(request, user_id):
 
 def unsend_friend_request(request, user_id):
     if request.method=='POST':
-        try:
-            # setting up initial values
-            sender = request.user
-            receiver = User.objects.get(id=user_id)
-            friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
+        # setting up initial values
+        sender = request.user
+        receiver = User.objects.get(id=user_id)
+        friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
 
-            # reset friend_request.status
-            friend_request.status = None
-            friend_request.save()
-            notification = receiver.notifications.unread().filter(sender=sender, verb=NotificationVerbs.following)
+        # reset friend_request.status
+        friend_request.status = None
+        friend_request.save()
+        notification = receiver.notifications.unread().filter(actor_object_id=sender.id, verb=NotificationVerbs.following)
+        # Find the first friend unread notification, and delete it.
+        if notification:
+            notification.delete()
+        relationship = Relationship.objects.filter(user=sender, friend=receiver).first()
 
-            # Find the first friend unread notification, and delete it.
-            if notification:
-                notification.delete()
-            relationship = relationships.objects.filter(user=sender, friend=receiver).first()
+        # Confirm -> delete friend request and friendship
+        if relationship:
+            relationship.delete()
+        response_data = {'message': 'Friend request unsent successfully'}            
 
-            # Confirm -> delete friend request and friendship
-            if Relationship:
-                relationship.delete()
-            response_data = {'message': 'Friend request unsent successfully'}            
-        except Exception as e:
-            response_data = {'message': f'{e}'}
     else:
         response_data = {'message': "unsend_friend_request doesn't use POST method"}
+    return JsonResponse(response_data)
 
 def confirm_request(request, notification_id):
     try:

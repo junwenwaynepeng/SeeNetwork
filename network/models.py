@@ -15,7 +15,7 @@ class FriendRequest(models.Model):
 	sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_requests')
 	receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_requests')
 	block_sender = models.BooleanField(default=False)
-	status = models.CharField(max_length=10, choices=Status.choices, default='pending')
+	status = models.CharField(max_length=10, choices=Status.choices, null=True, default='pending')
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 class Relationship(models.Model):
