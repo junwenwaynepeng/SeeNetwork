@@ -202,10 +202,25 @@ def ignore_request(request, notification_id):
     return JsonResponse(response_data)
 
 def block_unblock_user(request, user_id):
-    pass
-    # Read friend request
-    # block user_id
-    # unblock user_id
+    # Set initial values
+    user = request.user
+    block_user = user_id
+    # Read notification
+    try:
+        user.notifications.unread().mark_as_read()
+    except:
+        pass
+    # find friend request
+    friend_request = FriendRequest.objects.filter(
+                sender=block_user, receiver=user
+            ).first()
+    if not friend_request:
+        # create a FriendRequest obj and set block_sender=True
+        friend_request =FriendRequest(sender=block_user, receiver=user, status=None, block_sender=True)
+    else:
+        # set block_sender attr False if block_sender is True else set True
+        friend_request.block_sender = False if friend_request.block_sender else True
 
-
-
+def mark_all_as_read(request):
+    request.user.notifications.mark_all_as_read()
+    return JsonResponse({'message': 'mark all notification as read'})

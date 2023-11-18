@@ -11,7 +11,7 @@
           <li class="nav-item dropdown notification-ui">
             <a href="#" class="font-weight-bold text-success nav-link dropdown-toggle" id="notificationMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
               <i class="fa fa-bell" style="color: white;"></i>
-              <span class='badge badge-pill' style="background-color: #EF6262; color: #1D5879;">
+              <span id="notificationCounter" class='badge badge-pill' style="background-color: #EF6262; color: #1D5879;">
                 {% notifications_unread as unread_count %}
                 {% if unread_count %}
                   {{ unread_count }}
@@ -21,9 +21,9 @@
               </span>
             </a>
 
-            <div class="dropdown-menu dropdown-menu-end notification-ui_dd adaptive" style="width: 600px;" aria-labelledby="notificationMenu">
+            <div id="notificationMenu" class="dropdown-menu dropdown-menu-end notification-ui_dd adaptive" style="width: 600px;" aria-labelledby="notificationMenu">
               <div class="notification-ui_dd-header">
-                <h3 class="text-center">Notification</h3>
+                <h4 class="text-center">Notification</h4>
               </div>
               <div class="notification-ui_dd-content">
                 {% for notification in user.notifications.unread %}
@@ -83,5 +83,35 @@
 
 
 {% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Get the dropdown menu element
+    var notificationMenu = document.getElementById('notificationMenu');
 
+    // Add an event listener to the dropdown menu to mark notifications as read when opened
+    notificationMenu.addEventListener('click', function () {
+        // Perform an AJAX request to mark notifications as read
+        // Replace 'mark_as_read_url' with the actual URL in your Django project
+        fetch('{% url 'mark_all_as_read' %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Update the UI or perform additional actions if needed
+                console.log('Notifications marked as read:', data);
+            })
+            .catch(error => console.error('Error marking notifications as read:', error));
+    });
+    // Event listener for the dropdown close event
+    $('#notificationMenu').on('hidden.bs.dropdown', function () {
+        var notificationCounter = document.getElementById('notificationCounter')
+        notificationCounter.textContent = 0
+    });
+});
+</script>
 {% endblock %}
