@@ -37,11 +37,6 @@ class CustomUser(AbstractUser):
     nick_name = models.CharField(max_length=30, blank=True, null=True)
     gender = models.CharField(max_length=1, default='n', choices=Gender.choices)
     department = models.CharField(max_length=10, blank=True, null=True, choices=Department.choices)
-    display_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
-    display_student_id = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
-    display_nick_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
-    display_gender = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
-    display_department = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     slug = models.SlugField(max_length=25, verbose_name='User Slug', unique=True)
     def __str__(self):
         return self.username  # You can customize how user objects are displayed.
@@ -54,3 +49,16 @@ class CustomUser(AbstractUser):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.username))
         super(CustomUser, self).save(*args, **kwargs)
+
+class PrivateSettings(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    display_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
+    display_student_id = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
+    display_nick_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
+    display_gender = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
+    display_department = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
+    class Meta:
+        verbose_name = 'Private Setting'
+        verbose_name_plural = 'Private Settings'
+
+

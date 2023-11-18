@@ -7,13 +7,14 @@ class Status(models.TextChoices):
 	confirm = "confirm", "confirm"
 
 class NotificationVerbs(models.TextChoices):
-	following_request = "following", "following request"
-	confirm = "confirm", "confirm of your request"
+	following = "following", "following request"
+	confirm = "confirm", "confirm your request"
 	update = "cvupdate", "information update notification"
 
 class FriendRequest(models.Model):
 	sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_requests')
 	receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_requests')
+	block_sender = models.BooleanField(default=False)
 	status = models.CharField(max_length=10, choices=Status.choices, default='pending')
 	timestamp = models.DateTimeField(auto_now_add=True)
 

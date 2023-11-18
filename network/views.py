@@ -93,7 +93,7 @@ def search_users(request):
     request_has_sent = list()
     friends = list()
     for result in results:
-        if FriendRequest.objects.filter(sender=user.id, receiver=result.id).first():
+        if FriendRequest.objects.filter(sender=user.id, receiver=result.id, status="pending").first():
             request_has_sent.append(result)
         if Relationship.objects.filter(user=user.id, friend=result.id).first():
             friends.append(result)
@@ -110,58 +110,100 @@ def search_users(request):
 
 def send_friend_request(request, user_id):
     if request.method=='POST':
-        # Get the selected relationship type from the form
-        # Create a friend request with the selected relationship type
-        # Get the sender and receiver users
-        sender = request.user
-        receiver = User.objects.get(id=user_id)
-        print(request)
-        # Check if a friend request already exists
-        friend_request = FriendRequest.objects.filter(
-            sender=sender, receiver=receiver
-        ).first()
-        if not friend_request:
-            # Create a new friend request
-            friend_request = FriendRequest(
+        try:
+            sender = request.user
+            receiver = User.objects.get(id=user_id)
+            # Check if a friend request already exists
+            friend_request = FriendRequest.objects.filter(
                 sender=sender, receiver=receiver
-            )
-            friend_request.save()
-            notify.send(
-                sender, 
-                recipient=receiver, 
-                verb=f'following',
-                description=f'{sender} send you a following request',
-                action_object=friend_request
+            ).first()
+            if not friend_request or (friend_request.status==None):
+                # Create a new friend request
+                friend_request = FriendRequest(
+                    sender=sender, receiver=receiver, status='pending'
                 )
-        path = re.sub(f'/{user_id}','',request.path_info)
-        response_data = {'message': 'Friend request sent successfully'}
+                friend_request.save()
+
+                # check if the sender is in block list
+                if not friend_request.block_sender:
+                    notify.send(
+                        sender, 
+                        recipient=receiver, 
+                        verb=NotificationVerbs.following,
+                        description=f'{sender} send you a {NotificationVerbs.following.label}',
+                        action_object=friend_request
+                        )
+            response_data = {'message': 'Friend request sent successfully'}
+        except Exception as e:
+            response_data = {'message': f'{e}'}
+    else:
+        response_data = {'message': "friend_request doesn't use POST method"}
     return JsonResponse(response_data)
 
-def confirm_request(request, notification_id):
-    notification = request.user.notifications.get(id=notification_id)	
-    notification.mark_as_read()	
+def unsend_friend_request(request, user_id):
+    if request.method=='POST':
+        try:
+            # setting up initial values
+            sender = request.user
+            receiver = User.objects.get(id=user_id)
+            friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
 
-    # Create a relationship using the instance of FriendRequest
-    friend_request = FriendRequest.objects.get(id=notification.action_object.id)
-    friend_request.status = 'confirm'  # Change status to "confirm"
-    friend_request.save()  # Save the updated FriendRequest
-    Relationship.objects.create(
-        user=request.user,
-        friend=friend_request.sender,
-    )
+            # reset friend_request.status
+            friend_request.status = None
+            friend_request.save()
+            notification = receiver.notifications.unread().filter(sender=sender, verb=NotificationVerbs.following)
+
+            # Find the first friend unread notification, and delete it.
+            if notification:
+                notification.delete()
+            relationship = relationships.objects.filter(user=sender, friend=receiver).first()
+
+            # Confirm -> delete friend request and friendship
+            if Relationship:
+                relationship.delete()
+            response_data = {'message': 'Friend request unsent successfully'}            
+        except Exception as e:
+            response_data = {'message': f'{e}'}
+    else:
+        response_data = {'message': "unsend_friend_request doesn't use POST method"}
+
+def confirm_request(request, notification_id):
+    try:
+        notification = request.user.notifications.get(id=notification_id)	
+        notification.mark_as_read()	
+
+        # Create a relationship using the instance of FriendRequest
+        friend_request = FriendRequest.objects.get(id=notification.action_object.id)
+        friend_request.status = NotificationVerbs.confirm  # Change status to "confirm"
+        friend_request.save()  # Save the updated FriendRequest
+        Relationship.objects.create(
+            user=request.user,
+            friend=friend_request.sender,
+        )
+        # check if sender is in block list, otherwise, send notify
+        if not friend_request.block_sender:
+            notify.send(
+                receiver,
+                recipient=sender,
+                verb=NotificationVerbs.confirm,
+                description=f'{receiver} {NotificationVerbs.confirm}')
+        response_data = {'messages': 'confirm request successfully'}
+    except Exception as e:
+        response_data = {'message': f'{e}'}
     # Redirect to the desired page after confirmation
-    return redirect(request.path_info)
+    return JsonResponse(response_data)
 
 def ignore_request(request, notification_id):
     notification = request.user.notifications.get(id=notification_id)   
     notification.mark_as_read()
-    return HttpResponseRedirect(request.path_info)
+    response_data = {'message': 'ignore a request'}
+    return JsonResponse(response_data)
 
-def mark_as_read(request, notification_id):
-    notification = request.user.notifications.filter(verb__in=['update', 'confirm'])
-    for notification in update_confirm_notifications:
-        notification.mark_as_read()
-
+def block_unblock_user(request, user_id):
+    pass
+    # Read friend request
+    # block user_id
+    # unblock user_id
 
 
 
