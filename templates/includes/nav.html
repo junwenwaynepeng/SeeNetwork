@@ -9,7 +9,7 @@
       <ul class="navbar-nav ms-auto">
         {% if user.is_authenticated %}{% load notifications_tags %}
           <li class="nav-item dropdown notification-ui">
-            <a href="#" class="font-weight-bold text-success nav-link dropdown-toggle" id="notificationMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+            <a href="#" class="font-weight-bold text-success nav-link dropdown-toggle" id="notificationMenu" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  style="color: white;">
               <i class="fa fa-bell" style="color: white;"></i>
               <span id="notificationCounter" class='badge badge-pill' style="background-color: #EF6262; color: #1D5879;">
                 {% notifications_unread as unread_count %}
@@ -23,7 +23,7 @@
 
             <div id="notificationMenu" class="dropdown-menu dropdown-menu-end notification-ui_dd adaptive" style="width: 600px;" aria-labelledby="notificationMenu">
               <div class="notification-ui_dd-header">
-                <h4 class="text-center">Notification</h4>
+                <h4 class="text-center" href="{% url 'notifications' %}">Notification</h4>
               </div>
               <div class="notification-ui_dd-content">
                 {% for notification in user.notifications.unread %}
@@ -42,9 +42,6 @@
                           <a class="btn btn-primary btn-sm" href="{% url 'confirm_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">
                             <i class="fa fa-check"></i>
                           </a>
-                          <a class="btn btn-secondary btn-sm" href="{% url 'ignore_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">
-                            <i class="fa fa-times"></i>
-                          </a>
                         </p>
                       {% endif %}
                     </div>
@@ -58,6 +55,7 @@
               {{ user.username }}
             </a>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+              <a class="dropdown-item" href="{% url 'notifications' %}" style="color: #1D5879;" name=notification value=True>Notifications</a>
               <a class="dropdown-item" href="{% url 'profile_view' user_slug=user.slug %}" style="color: #1D5879;" name=profile_view value=True>My account</a>
               <a class="dropdown-item" href="#" style="color: #1D5879;">Change password</a>
               <div class="dropdown-divider"></div>
@@ -113,5 +111,12 @@ document.addEventListener('DOMContentLoaded', function () {
         notificationCounter.textContent = 0
     });
 });
+</script>
+<script>
+  function directToNotifications() {
+    $.ajax({
+      url: '/notifications'
+    })
+  }
 </script>
 {% endblock %}

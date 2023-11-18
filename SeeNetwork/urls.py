@@ -34,5 +34,6 @@ urlpatterns = [
     path('confirm_request/<int:notification_id>', views.confirm_request, name='confirm_request'),
     path('profile/<slug:user_slug>', accounts_views.profile_view, name='profile_view'),
     path('ignore_request/<int:notification_id>', views.ignore_request, name='ignore_request'),
-    path('mark_all_as_read/', views.mark_all_as_read, name='mark_all_as_read')
+    path('mark_all_as_read/', views.mark_all_as_read, name='mark_all_as_read'),
+    path('notifications/', views.notifications, name='notifications'),
 ]

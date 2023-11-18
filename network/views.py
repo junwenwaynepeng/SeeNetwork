@@ -224,3 +224,6 @@ def block_unblock_user(request, user_id):
 def mark_all_as_read(request):
     request.user.notifications.mark_all_as_read()
     return JsonResponse({'message': 'mark all notification as read'})
+
+def notifications(request):
+    return render(request, 'notifications.html')
