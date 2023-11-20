@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block stylesheet %}
+<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+<link rel="stylesheet" href="{% static 'css/graph.css' %}">
+{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Network Visualization</li>
+{% endblock %}
+{% block content %}
+<div class="row-container">
+  <div class="first-row">
+    <select id="network-style-select" class="form-select" aria-label="network style select">
+      <option selected>Graph style</option>
+      <option value="graph">無方向圖</option>
+      <option value="digraph">有方向圖</option>
+    </select>
+  </div>
+  <iframe id="network-iframe" src="/graph/graph" class="second-row"></iframe>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Wait for the document to be ready
+$(document).ready(function() {
+  // Add change event listener to the select element
+  $('#network-style-select').change(function() {
+    // Get the selected option value
+    var selectedOption = $(this).val();
+
+    // Construct the URL based on the selected option
+    var graphUrl = '/graph/' + selectedOption;
+    console.log(graphUrl)    
+    // Update the src attribute of the iframe
+    $('#network-iframe').attr('src', '').attr('src', graphUrl);
+  });
+});
+</script>
+{% endblock %}
