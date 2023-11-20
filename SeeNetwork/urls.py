@@ -36,4 +36,6 @@ urlpatterns = [
     path('ignore_request/<int:notification_id>', views.ignore_request, name='ignore_request'),
     path('mark_all_as_read/', views.mark_all_as_read, name='mark_all_as_read'),
     path('notifications/', views.notifications, name='notifications'),
+    path('network/', views.network, name='network'),
+    path('graph/<slug:option>', views.graph, name='graph')
 ]

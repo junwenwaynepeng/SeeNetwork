@@ -19,7 +19,7 @@ import re
 # Create your views here.
 
 
-def home(request):
+def graph(request, option):
     def clean_network_html(html_content: str, del_html_by_pattern: list):
         # Parse the HTML content with BeautifulSoup
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -54,8 +54,11 @@ def home(request):
             return find_nodes_within_distance(source, relationships, edges, length-1)
 
     # Create a Network instance
-    net = Network(directed=True)
-    G = networkx.MultiDiGraph()
+    if option=='digraph':
+        net = Network(directed=True)
+    else:
+        net = Network()
+    G = networkx.DiGraph()
     # Get all users and their relationships
     users = User.objects.all()
     relationships = Relationship.objects.all()
@@ -78,13 +81,19 @@ def home(request):
             for relation in local_relationships:
                 G.add_edge(relation[0], relation[2])
         except Exception as e:
-            print(e)
+            return JsonResponse({messages: f'{e}'})
 
     # Generate the HTML for the network
     net.from_nx(G)
     network_html = net.generate_html()
     network_html = clean_network_html(network_html, ['bootstrap'])
-    return render(request, 'home.html', {'network': network_html})
+    return render(request, 'includes/graph.html', {'network': network_html})
+
+def network(request):
+    return render(request, 'network.html')
+
+def home(request):
+    return render(request, 'home.html')
 
 def search_users(request):
     query = request.GET.get('q', '')
