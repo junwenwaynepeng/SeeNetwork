@@ -1,3 +1,4 @@
+{% csrf_token %}
 <nav class="navbar navbar-expand-lg" style="background-color: #1D5879;">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'home' %}" style="color: white;">SeeNetwork</a>
@@ -37,9 +38,9 @@
                     </div>
                     <div class="notification-list_feature-img">
               
-                      {% if notification.verb == 'connection_request' %}
+                      {% if notification.verb == 'following' %}
                         <p>
-                          <a class="btn btn-primary btn-sm" href="{% url 'confirm_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">
+                          <a id="nav-confirm-{{ notification.id }}" class="btn btn-primary btn-sm" onclick="confirmFriendRequest({{notification.id}})" href="#" style="background-color: #FFAD5A; color: #1D5879;">
                             <i class="fa fa-check"></i>
                           </a>
                         </p>
@@ -113,10 +114,47 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
-  function directToNotifications() {
+window.onbeforeunload = function(){
+  fetch('{% url 'mark_all_as_read' %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Update the UI or perform additional actions if needed
+                console.log('Notifications marked as read:', data);
+            })
+            .catch(error => console.error('Error marking notifications as read:', error));
+};
+</script>
+<script type="text/javascript">
+  function confirmFriendRequest(notificationId) {
     $.ajax({
-      url: '/notifications'
-    })
+      type: 'POST',
+      url: '/confirm_request/' + notificationId,
+      headers: {'X-CSRFToken': csrftoken },
+      data: {
+        message: 'confirm_request'
+      },               
+      success: function(response) {
+          // Handle the server response here
+          console.log(response);
+      },
+      error: function(error) {
+          // Handle errors here
+          console.error(error);
+      }
+    });
+    var confirmIcon = document.getElementById('confirm-' + notificationId)
+    // Check if the icon element exists
+    if (confirmIcon) {
+      // disable button
+      confirmIcon.classList.add('disabled');
+    }
   }
 </script>
 {% endblock %}

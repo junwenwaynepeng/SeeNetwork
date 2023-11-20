@@ -61,4 +61,3 @@ class PrivateSettings(models.Model):
         verbose_name = 'Private Setting'
         verbose_name_plural = 'Private Settings'
 
-

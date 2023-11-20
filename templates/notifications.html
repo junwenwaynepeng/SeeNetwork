@@ -1,40 +1,61 @@
 <!-- notifications.html -->
 
 {% extends 'base.html' %}
-
+{% load notifications_tags %}
+{% load static %}
+{% block stylesheet %}
+<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dark-light.css' %}">
+{% endblock %}
 {% block breadcrumb %}
   <li class="breadcrumb-item active">Notifications</li>
 {% endblock %}
 {% block content %}
-  <div class="container">
-    <h1>Notifications</h1>
-    
-    <!-- Unread notifications -->
-    <h2>Unread Notifications</h2>
-    <ul>
-      {% for notification in user.notifications.unread %}
-        <li>
-          <p>
-            <a href="{% url 'profile_view' notification.actor.slug %}">{{ notification.actor }}</a>: {{ notification.description }}
-          </p>
-           <p><small>{{ notification.timestemp }}</small></p>
-        </li>
-        <!-- Add more details as needed -->
-      {% endfor %}
-    </ul>
+  <div class="container-fluid adaptive">
 
     <!-- Unread notifications -->
-    <h2>Read Notifications</h2>
-    <ul>
-      {% for notification in user.notifications.read %}
-        <li>
-          <p>
-            <a href="{% url 'profile_view' notification.actor.slug %}">{{ notification.actor }}</a>: {{ notification.description }}
-          </p>
-           <p><small>{{ notification.timestemp }}</small></p>
-        </li>
-        <!-- Add more details as needed -->
-      {% endfor %}
-    </ul>
+    {% notifications_unread as unread_count %}
+    {% if unread_count %}
+      <ul>
+        {% for notification in user.notifications.unread %}
+          <li>
+            <p>
+              {% csrf_token %}
+              <a href="{% url 'profile_view' notification.actor.slug %}">{{ notification.actor }}</a>: {{ notification.description }} 
+              {% if notification.verb == 'following' %}
+              <a class="btn btn-primary btn-sm" href="{% url 'confirm_request' notification.id %}" style="background-color: #FFAD5A; color: #1D5879;">
+                <i class="fa fa-check"></i>
+              </a>
+              {% endif %}
+            </p>
+             <p><small>{{ notification.timestemp }}</small></p>
+
+          </li>
+          <!-- Add more details as needed -->
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <h6 class="middle-text"><span>readed notification<span></h6>
+    <!-- Unread notifications -->
+    {% if user.notifications.read %}
+      <h2>Read Notifications</h2>
+      <ul>
+        {% for notification in user.notifications.read %}
+        {% if notification %}
+          <li>
+            <p>
+              <a href="{% url 'profile_view' notification.actor.slug %}">{{ notification.actor }}</a>: {{ notification.description }}
+              {% if notification.verb == 'following' and notification.action_object.status == 'pending' %}
+              <a id="confirm-{{ notification.id }}" class="btn btn-primary btn-sm" onclick="confirmFriendRequest({{ notification.id }})" href="#" style="background-color: #FFAD5A; color: #1D5879;">
+                <i class="fa fa-check"></i>
+              </a>
+              {% endif %}
+            </p>
+             <p><small>{{ notification.timestemp }}</small></p>
+          </li>
+          <!-- Add more details as needed -->
+        {% endif %}{% endfor %}
+      </ul>
+    {% endif %}
   </div>
 {% endblock %}

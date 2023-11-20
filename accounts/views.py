@@ -26,4 +26,4 @@ def profile_view(request, user_slug):
         if profile_form.is_valid():
             profile_form.save()
     
-    return render(request, 'profile.html', {'user': user, 'profile_owner': profile_owner, 'profile_form': profile_form, 'show_current_profile': show_current_profile, 'slug': user_slug})
+    return render(request, 'profile.html', {'profile_owner': profile_owner, 'profile_form': profile_form, 'slug': user_slug})

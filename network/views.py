@@ -41,20 +41,21 @@ def home(request):
             return list(source), list(relationships)
         else:
             old_edges = set(edges)
+            print(edges)
             for edge in old_edges:
                 if (edge[0], edge[1]) in source:
                     source.add((edge[2], edge[3]))
                     relationships.add(edge)
-                    edges.remove(edge)
+                    edges.discard(edge)
                 if (edge[2], edge[3]) in source:
                     source.add((edge[0], edge[1]))
                     relationships.add(edge)
-                    edges.remove(edge)
+                    edges.discard(edge)
             return find_nodes_within_distance(source, relationships, edges, length-1)
 
     # Create a Network instance
-    net = Network()
-    G = networkx.Graph()
+    net = Network(directed=True)
+    G = networkx.MultiDiGraph()
     # Get all users and their relationships
     users = User.objects.all()
     relationships = Relationship.objects.all()
@@ -71,7 +72,7 @@ def home(request):
     else:
         edges = {(relation.user.id, relation.user.username, relation.friend.id, relation.friend.username) for relation in relationships}
         source, local_relationships = find_nodes_within_distance({(user.id, user.username)}, set(), edges, 2)
-        try:
+        try:    
             for node in source:
                 G.add_node(node[0], label=node[1])
             for relation in local_relationships:
@@ -176,20 +177,23 @@ def confirm_request(request, notification_id):
 
         # Create a relationship using the instance of FriendRequest
         friend_request = FriendRequest.objects.get(id=notification.action_object.id)
-        friend_request.status = NotificationVerbs.confirm  # Change status to "confirm"
-        friend_request.save()  # Save the updated FriendRequest
-        Relationship.objects.create(
-            user=request.user,
-            friend=friend_request.sender,
-        )
-        # check if sender is in block list, otherwise, send notify
-        if not friend_request.block_sender:
-            notify.send(
-                receiver,
-                recipient=sender,
-                verb=NotificationVerbs.confirm,
-                description=f'{receiver} {NotificationVerbs.confirm}')
-        response_data = {'messages': 'confirm request successfully'}
+        if friend_request.status=='pending':
+            friend_request.status = NotificationVerbs.confirm  # Change status to "confirm"
+            friend_request.save()  # Save the updated FriendRequest
+            Relationship.objects.create(
+                user=request.user,
+                friend=friend_request.sender,
+            )
+            # check if sender is in block list, otherwise, send notify
+            if not friend_request.block_sender:
+                notify.send(
+                    request.user,
+                    recipient=friend_request.sender,
+                    verb=NotificationVerbs.confirm,
+                    description=f'{friend_request.sender} {NotificationVerbs.confirm} your friend_request')
+            response_data = {'messages': 'confirm request successfully'}
+        else:
+            response_data = {'messages': 'Is confirmed already or the sender retreat this friend request'}
     except Exception as e:
         response_data = {'message': f'{e}'}
     # Redirect to the desired page after confirmation

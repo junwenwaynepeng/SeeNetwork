@@ -4,7 +4,7 @@
         background: #809DA5;
     }
     .breadcrumb.adaptive {
-        color:;
+        color: #809DA5;
     }
     .container.adaptive{
         background: #809DA5;
@@ -32,6 +32,10 @@
         background-color: #FFEDC4; 
         color: #012B37; 
     }
+    h6.middle-text span { 
+    background: #FFEDC4; 
+    padding:0 10px; 
+    }
 }
 
 /* Dark mode */
@@ -40,7 +44,7 @@
         background: #012A35;
     }
     .breadcrumb.adaptive {
-        color:;
+        color: #012A35;
     }
     .container.adaptive{
         background: #012A35;
@@ -67,5 +71,9 @@
     .dropdown-menu.notification-ui_dd.adaptive {
         background-color: white; 
         color: #012B37; 
+    }
+    h6.middle-text span { 
+        background: #012A35; 
+        padding:0 10px; 
     }
 }
