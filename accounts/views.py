@@ -1,8 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login
-from .forms import SignUpForm, UserProfileForm
+from .forms import SignUpForm, UserProfileForm, SelfIntroductionForm
 from .models import CustomUser as User
+from .models import WorkExperience, SelfIntroduction, EssentialSkill, Award, Publication
+
 
 def signup(request):
 	if request.method == 'POST':
@@ -17,13 +19,28 @@ def signup(request):
 
 def profile_view(request, user_slug):
     user = request.user
-    profile_owner = get_object_or_404(User, slug=user_slug)
-    profile_form = UserProfileForm(instance=profile_owner)
-    if request.method == 'GET':
-    	show_current_profile=True
     if request.method == 'POST':
         profile_form = UserProfileForm(request.POST, instance=user)
         if profile_form.is_valid():
             profile_form.save()
+        self_introduction_form = SelfIntroductionForm(request.POST, instance=user)
+        if self_introduction_form.is_valid():
+            print(self_introduction_form)
+            self_introduction_form.save()
     
-    return render(request, 'profile.html', {'profile_owner': profile_owner, 'profile_form': profile_form, 'slug': user_slug})
+    profile_owner = get_object_or_404(User, slug=user_slug)
+    profile_form = UserProfileForm(instance=profile_owner)
+    self_introduction = SelfIntroduction.objects.filter(user=profile_owner).first()
+    self_introduction_form = SelfIntroductionForm(instance=profile_owner)
+    essential_skill = EssentialSkill.objects.filter(user=profile_owner).first()
+
+
+
+
+    return render(request, 'profile.html', {
+    	'profile_owner': profile_owner, 
+    	'profile_form': profile_form, 
+    	'self_introduction_form': self_introduction_form,
+    	#'essential_skill_form': essential_skill_form,
+    	'slug': user_slug
+    	})

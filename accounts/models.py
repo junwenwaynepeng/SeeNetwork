@@ -61,3 +61,50 @@ class PrivateSettings(models.Model):
         verbose_name = 'Private Setting'
         verbose_name_plural = 'Private Settings'
 
+class WorkExperience(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    position = models.CharField(max_length=255)
+    company = models.CharField(max_length=255)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.user.username}'s Work Experience - {self.position} at {self.company}"
+
+class SelfIntroduction(models.Model):
+    user = models.OneToOneField(CustomUser, primary_key=True, on_delete=models.CASCADE)
+    content = models.TextField()
+
+    def __str__(self):
+        return f"{self.user.username}'s Self Introduction"
+
+class EssentialSkill(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    skill_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.user.username}'s Essential Skill - {self.skill_name}"
+
+class Award(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    year = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.user.username}'s Award - {self.title} ({self.year})"
+
+class Publication(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    authors = models.CharField(max_length=255)
+    publication_date = models.DateField()
+    link = models.URLField(max_length=200, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Publication - {self.title} ({self.publication_date.year})"
+
+class SelfDefinedContent(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    content = models.TextField()
