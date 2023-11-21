@@ -3,11 +3,11 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser as User
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.helper import FormHelper
-from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent
+from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction
 
 class SelfIntroductionForm(forms.ModelForm):
     class Meta:
-        model = CurriculumVitae
+        model = SelfIntroduction
         fields = ['self_introduction']
 
 class EducationForm(forms.ModelForm):
@@ -23,12 +23,12 @@ class WorkExperienceForm(forms.ModelForm):
 class EssentialSkillForm(forms.ModelForm):
     class Meta:
         model = EssentialSkill
-        fields = ['skill_name']
+        fields = ['skill_name', 'description']
 
 class AwardForm(forms.ModelForm):
     class Meta:
         model = Award
-        fields = ['title', 'year']
+        fields = ['title', 'organization', 'year']
 
 class PublicationForm(forms.ModelForm):
     class Meta:

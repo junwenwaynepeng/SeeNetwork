@@ -46,7 +46,7 @@
             </div>
             {% if profile_owner.slug == user.slug %}
               <div class="text-right adaptive">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">編輯</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="model" data-bs-target="#profileModal">編輯</button>
               </div>
             {% endif %}
           </div>
@@ -54,101 +54,101 @@
       </div>
       <div class="col-md-6">
         <!-- Content for the right section goes here -->
-        <div class="card w-100 profile-adaptive">
-          <div class="card-body">
-            <div class="mb-3">
-              <label for="student_id" class="form-label fs-6 profile-adaptive">About Me</label>
-              {% if profile_owner.slug == user.slug %}
-              <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#selfIntroductionModal">
-                  <i class="fa fa-plus"></i>
-                </button>
-              {% endif %}
-              <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ curriculum_vitae.self_introduction }}</p>
-            </div>
-          </div>
+        {% for card in cards %}
           <div class="card w-100 profile-adaptive">
-          <div class="card-body">
-            <div class="mb-3">
-              <label for="student_id" class="form-label fs-6 profile-adaptive">Education</label>
-              {% if profile_owner.slug == user.slug %}
-                <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#educationModal">
-                  <i class="fa fa-plus"></i>
-                </button>
-              {% endif %}
-              {% for edu in education%}
-                <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ edu.school }}-{{ edu.degree }}-{{ edu.year }}</p>
-              {% endfor %}
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="student_id" class="form-label fs-6 profile-adaptive">{{ card.title }}</label>
+                {% if profile_owner.slug == user.slug %}
+                  <button type="button" class="btn btn-link float-end" data-bs-toggle="model" data-bs-target="#{{ card.model }}Modal">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                {% endif %}
+                {% if card.is_list %}
+                  {% for item in card.item_list %}
+                    <p id="delete-item-{{ card.model }}-{{ item.id }}" class="fw-normal ms-2 fs-5 profile-adaptive">{{ item }}
+                    {% if profile_owner.slug == user.slug %}
+                      <button type="button" class="btn btn-link float-end" onclick="deleteItem('{{ card.model }}', {{ item.id }})">
+                        <i class="fa fa-minus"></i>
+                      </button>
+                    </p>
+                {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ card.content }}</p>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
+        {% endfor %}
       </div>
     </div>
   </div>
 
   {% if profile_owner.slug  == user.slug %}
   {% load crispy_forms_tags %}  
-    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">修改基本資料</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="model fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+      <div class="model-dialog">
+        <div class="model-content">
+          <div class="model-header">
+            <h5 class="model-title" id="exampleModalLabel">修改基本資料</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="model" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="model-body">
             <form method="post" action="{% url 'save_profile' %}">
               {% csrf_token %}
               {{ profile_form|crispy }}
-              <div class="modal-footer">
+              <div class="model-footer">
                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <div class="model-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="model">Close</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="modal fade" id="selfIntroductionModal" tabindex="-1" aria-labelledby="selfIntroductionModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="selfIntroductionModalLabel">自介</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="model fade" id="selfIntroductionModal" tabindex="-1" aria-labelledby="selfIntroductionModalLabel" aria-hidden="true">
+      <div class="model-dialog">
+        <div class="model-content">
+          <div class="model-header">
+            <h5 class="model-title" id="selfIntroductionModalLabel">自介</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="model" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="model-body">
             <form method="post" action="{% url 'save_self_introduction' %}">
               {% csrf_token %}
               {{ self_introduction_form|crispy }}
-              <div class="modal-footer">
+              <div class="model-footer">
                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <div class="model-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="model">Close</button>
           </div>
         </div>
       </div>
     </div>
-        <div class="modal fade" id="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="educationModalLabel">學歷</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="model fade" id="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true">
+      <div class="model-dialog">
+        <div class="model-content">
+          <div class="model-header">
+            <h5 class="model-title" id="educationModalLabel">學歷</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="model" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="model-body">
             <form method="post" action="{% url 'save_education' %}">
               {% csrf_token %}
               {{ education_form|crispy }}
-              <div class="modal-footer">
+              <div class="model-footer">
                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <div class="model-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="model">Close</button>
           </div>
         </div>
       </div>
@@ -157,4 +157,35 @@
   {% endif %}
 
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function deleteItem(model, itemId) {
+    var contentId = 'delete-item-' + model + '-' + itemId;
+    var formData = {
+      itemId: itemId, 
+      model: model, 
+    };
+
+    const content = document.getElementById(contentId);
+    content.remove();
+
+    $.ajax({
+        type: 'DELETE',
+        url: '/delete_profile_item',  // Replace with your actual endpoint
+        contentType: 'application/json',  // Set content type to JSON
+        data: JSON.stringify(formData),
+        headers: {'X-CSRFToken': '{{ csrf_token }}' },
+        success: function(response) {
+            // Handle the server response here
+            console.log('success');
+        },
+        error: function(error) {
+            // Handle errors here
+            console.error(error);
+        }
+    });
+  }
+</script>
 {% endblock %}

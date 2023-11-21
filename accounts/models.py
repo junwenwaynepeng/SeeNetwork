@@ -64,8 +64,15 @@ class PrivateSetting(models.Model):
 class Education(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     school = models.CharField(max_length=255)
+    department = models.CharField(max_length=50, null=True, blank=True)
     degree = models.CharField(max_length=20)
     year = models.PositiveSmallIntegerField()
+    def __str__(self):
+        if self.department==None:
+            return f'{self.school}, {self.degree}, {self.year}'
+        else:            
+            return f'{self.school}, {self.department}, {self.degree}, {self.year}'
+
 
 class WorkExperience(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -84,6 +91,7 @@ class EssentialSkill(models.Model):
 class Award(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
+    organization = models.CharField(max_length=255, null=True, blank=True)
     year = models.PositiveSmallIntegerField()
     high_light = models.BooleanField()
 
@@ -101,9 +109,12 @@ class SelfDefinedContent(models.Model):
     content = models.TextField()
     form_order = models.PositiveSmallIntegerField()
 
-class CurriculumVitae(models.Model):
+class SelfIntroduction(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     self_introduction = models.TextField(null=True, blank=True)
+
+class CurriculumVitae(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     self_introduction_form_order = models.PositiveSmallIntegerField(default=0)
     education_form_order = models.PositiveSmallIntegerField(default=1)
     work_experience_form_order = models.PositiveSmallIntegerField(default=2)

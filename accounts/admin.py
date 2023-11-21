@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CurriculumVitae, CustomUser, WorkExperience, EssentialSkill, Award, Publication, Education
+from .models import CurriculumVitae, CustomUser, WorkExperience, EssentialSkill, Award, Publication, Education, SelfIntroduction
 
 
 class CustomUserAdmin(UserAdmin):
@@ -19,9 +19,10 @@ class CustomUserAdmin(UserAdmin):
     }),
 )
 
-class CurriculumVitaeAdmin(admin.ModelAdmin):
-    list_display = ('user', 'self_introduction',)
-    search_fields = ('user', )
+@admin.register(SelfIntroduction)
+class SelfIntroductionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'self_introduction')
+
 
 class WorkExperienceAdmin(admin.ModelAdmin):
     list_display = ('position', 'company', 'start_date', 'end_date')
@@ -48,4 +49,3 @@ admin.site.register(EssentialSkill, EssentialSkillAdmin)
 admin.site.register(Award, AwardAdmin)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(CurriculumVitae, CurriculumVitaeAdmin)
