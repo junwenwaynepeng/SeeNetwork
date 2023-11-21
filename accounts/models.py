@@ -50,7 +50,7 @@ class CustomUser(AbstractUser):
             self.slug = unique_slugify(self, slugify(self.username))
         super(CustomUser, self).save(*args, **kwargs)
 
-class PrivateSettings(models.Model):
+class PrivateSetting(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     display_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     display_student_id = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
@@ -61,6 +61,12 @@ class PrivateSettings(models.Model):
         verbose_name = 'Private Setting'
         verbose_name_plural = 'Private Settings'
 
+class Education(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    school = models.CharField(max_length=255)
+    degree = models.CharField(max_length=20)
+    year = models.PositiveSmallIntegerField()
+
 class WorkExperience(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     position = models.CharField(max_length=255)
@@ -69,30 +75,17 @@ class WorkExperience(models.Model):
     end_date = models.DateField(null=True, blank=True)
     description = models.TextField()
 
-    def __str__(self):
-        return f"{self.user.username}'s Work Experience - {self.position} at {self.company}"
-
-class SelfIntroduction(models.Model):
-    user = models.OneToOneField(CustomUser, primary_key=True, on_delete=models.CASCADE)
-    content = models.TextField()
-
-    def __str__(self):
-        return f"{self.user.username}'s Self Introduction"
-
 class EssentialSkill(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     skill_name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.user.username}'s Essential Skill - {self.skill_name}"
+    description = models.TextField(null=True, blank=True)
+    order = models.PositiveSmallIntegerField()
 
 class Award(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    year = models.PositiveIntegerField()
-
-    def __str__(self):
-        return f"{self.user.username}'s Award - {self.title} ({self.year})"
+    year = models.PositiveSmallIntegerField()
+    high_light = models.BooleanField()
 
 class Publication(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -100,11 +93,22 @@ class Publication(models.Model):
     authors = models.CharField(max_length=255)
     publication_date = models.DateField()
     link = models.URLField(max_length=200, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.user.username}'s Publication - {self.title} ({self.publication_date.year})"
+    high_light = models.BooleanField()
 
 class SelfDefinedContent(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField()
+    form_order = models.PositiveSmallIntegerField()
+
+class CurriculumVitae(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    self_introduction = models.TextField(null=True, blank=True)
+    self_introduction_form_order = models.PositiveSmallIntegerField(default=0)
+    education_form_order = models.PositiveSmallIntegerField(default=1)
+    work_experience_form_order = models.PositiveSmallIntegerField(default=2)
+    essential_skill_form_order = models.PositiveSmallIntegerField(default=3)
+    award_form_order = models.PositiveSmallIntegerField(default=4)
+    publication_form_order = models.PositiveSmallIntegerField(default=5)
+    self_defined_content = models.ManyToManyField(SelfDefinedContent, blank=True)
+

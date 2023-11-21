@@ -63,7 +63,21 @@
                   <i class="fa fa-plus"></i>
                 </button>
               {% endif %}
-              <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ self_introduction.content }}</p>
+              <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ curriculum_vitae.self_introduction }}</p>
+            </div>
+          </div>
+          <div class="card w-100 profile-adaptive">
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="student_id" class="form-label fs-6 profile-adaptive">Education</label>
+              {% if profile_owner.slug == user.slug %}
+                <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#educationModal">
+                  <i class="fa fa-plus"></i>
+                </button>
+              {% endif %}
+              {% for edu in education%}
+                <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ edu.school }}-{{ edu.degree }}-{{ edu.year }}</p>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -81,10 +95,9 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="post">
+            <form method="post" action="{% url 'save_profile' %}">
               {% csrf_token %}
               {{ profile_form|crispy }}
-          
               <div class="modal-footer">
                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
@@ -100,15 +113,15 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="selfIntroductionModalLabel">Edit About Me</h5>
+            <h5 class="modal-title" id="selfIntroductionModalLabel">自介</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="post">
+            <form method="post" action="{% url 'save_self_introduction' %}">
               {% csrf_token %}
               {{ self_introduction_form|crispy }}
               <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Save changes</button>
+               <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
             </form>
           </div>
@@ -118,6 +131,29 @@
         </div>
       </div>
     </div>
+        <div class="modal fade" id="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="educationModalLabel">學歷</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="post" action="{% url 'save_education' %}">
+              {% csrf_token %}
+              {{ education_form|crispy }}
+              <div class="modal-footer">
+               <button type="submit" class="btn btn-primary">Save changes</button>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   {% endif %}
 
 

@@ -3,21 +3,22 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser as User
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.helper import FormHelper
-from .models import WorkExperience, SelfIntroduction, EssentialSkill, Award, Publication, SelfDefinedContent
+from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent
+
+class SelfIntroductionForm(forms.ModelForm):
+    class Meta:
+        model = CurriculumVitae
+        fields = ['self_introduction']
+
+class EducationForm(forms.ModelForm):
+    class Meta:
+        model = Education
+        fields = ['school', 'degree', 'year']
 
 class WorkExperienceForm(forms.ModelForm):
     class Meta:
         model = WorkExperience
         fields = ['position', 'company', 'start_date', 'end_date', 'description']
-
-class SelfIntroductionForm(forms.ModelForm):
-    class Meta:
-        model = SelfIntroduction
-        fields = ['content']
-        widgets = {
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
-        }
-
 
 class EssentialSkillForm(forms.ModelForm):
     class Meta:
