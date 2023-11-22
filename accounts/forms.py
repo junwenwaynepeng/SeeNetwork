@@ -35,7 +35,7 @@ class PublicationForm(forms.ModelForm):
         model = Publication
         fields = ['title', 'authors', 'publication_date']
 
-class SelfDefinedContent(forms.ModelForm):
+class SelfDefinedContentForm(forms.ModelForm):
     class Meta:
         model = SelfDefinedContent
         fields = ['title', 'content']

@@ -2,6 +2,7 @@
 {% load static %}
 {% block stylesheet %}
   <link rel="stylesheet" href="{% static 'css/dark-light.css' %}">
+  <link rel="stylesheet" href="{% static 'css/drag-drop.css' %}">
 {% endblock %}
 {% load user_filter %}
 {% block title %}User Profile{% endblock %}
@@ -10,8 +11,8 @@
   <div class="container-fluid adaptive">
     <div class="row">
       <!-- Left Section -->
-      <div class="col-md-6">
-        <div class="card w-50 profile-adaptive">
+      <div class="col-md-4">
+        <div class="card w-100 profile-adaptive">
           <div class="card-body">
             <h5 class="card-title fs-3 fw-bolder profile-adaptive">基本資料</h5>
 
@@ -46,7 +47,7 @@
             </div>
             {% if profile_owner.slug == user.slug %}
               <div class="text-right adaptive">
-                <button type="button" class="btn btn-primary" data-bs-toggle="model" data-bs-target="#profileModal">編輯</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">編輯</button>
               </div>
             {% endif %}
           </div>
@@ -54,138 +55,234 @@
       </div>
       <div class="col-md-6">
         <!-- Content for the right section goes here -->
-        {% for card in cards %}
-          <div class="card w-100 profile-adaptive">
-            <div class="card-body">
-              <div class="mb-3">
-                <label for="student_id" class="form-label fs-6 profile-adaptive">{{ card.title }}</label>
-                {% if profile_owner.slug == user.slug %}
-                  <button type="button" class="btn btn-link float-end" data-bs-toggle="model" data-bs-target="#{{ card.model }}Modal">
-                    <i class="fa fa-plus"></i>
-                  </button>
-                {% endif %}
-                {% if card.is_list %}
-                  {% for item in card.item_list %}
-                    <p id="delete-item-{{ card.model }}-{{ item.id }}" class="fw-normal ms-2 fs-5 profile-adaptive">{{ item }}
+        <ul class="drag-drop" style="list-style-type: none;">
+          {% for card in cards %}
+            <li class="drag-drop" value="{{ card.order }}" draggable="true">
+              <div class="card w-100 profile-adaptive">
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label for="student_id" class="form-label fs-6 profile-adaptive">{{ card.title }}
                     {% if profile_owner.slug == user.slug %}
-                      <button type="button" class="btn btn-link float-end" onclick="deleteItem('{{ card.model }}', {{ item.id }})">
-                        <i class="fa fa-minus"></i>
+                      <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#{{ card.model }}Modal">
+                        <i class="fa fa-plus"></i>
                       </button>
-                    </p>
-                {% endif %}
-                  {% endfor %}
-                {% else %}
-                  <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ card.content }}</p>
-                {% endif %}
+                    {% endif %}
+                    </label>
+                    {% if card.is_list %}
+                      <ul>
+                        {% for item in card.item_list %}
+                          <li>
+                            <p id="delete-item-{{ card.model }}-{{ item.id }}" class="fw-normal ms-2 fs-5 profile-adaptive">{{ item }}
+                              {% if profile_owner.slug == user.slug %}
+                                <button type="button" class="btn btn-link float-end" onclick="deleteItem('{{ card.model }}', {{ item.id }})">
+                                  <i class="fa fa-minus"></i>
+                                </button>
+                              {% endif %}
+                            </p>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% else %}
+                      <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ card.content }}</p>
+                    {% endif %}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        {% endfor %}
+            </li>
+          {% endfor %}
+        </ul>
+        <!--新增自定義欄位按鈕-->
+        <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#selfDefinedContentModal">
+          <i class="fa fa-plus">新增自定義欄位</i>
+        </button>
       </div>
     </div>
   </div>
 
   {% if profile_owner.slug  == user.slug %}
-  {% load crispy_forms_tags %}  
-    <div class="model fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-      <div class="model-dialog">
-        <div class="model-content">
-          <div class="model-header">
-            <h5 class="model-title" id="exampleModalLabel">修改基本資料</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="model" aria-label="Close"></button>
+  {% load crispy_forms_tags %}
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">修改基本資料</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="model-body">
+          <div class="modal-body">
             <form method="post" action="{% url 'save_profile' %}">
               {% csrf_token %}
-              {{ profile_form|crispy }}
-              <div class="model-footer">
+              {{ profile_form | crispy }}
+              <div class="modal-footer">
                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
             </form>
           </div>
-          <div class="model-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="model">Close</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="model fade" id="selfIntroductionModal" tabindex="-1" aria-labelledby="selfIntroductionModalLabel" aria-hidden="true">
-      <div class="model-dialog">
-        <div class="model-content">
-          <div class="model-header">
-            <h5 class="model-title" id="selfIntroductionModalLabel">自介</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="model" aria-label="Close"></button>
+    {% for card in cards %}
+      <div class="modal fade" id="{{ card.model }}Modal" tabindex="-1" aria-labelledby="{{ card.model }}ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="{{ card.model }}ModalLabel">{{ card.edit_title }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" action="{% url 'save_other_profile' card.model %}">
+                {% csrf_token %}
+                {{ card.form | crispy }}
+                <div class="modal-footer">
+                 <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
           </div>
-          <div class="model-body">
-            <form method="post" action="{% url 'save_self_introduction' %}">
+        </div>
+      </div>
+    {% endfor %}
+    <!--新增自定義欄位-->
+    <div class="modal fade" id="selfDefinedContentModal" tabindex="-1" aria-labelledby="selfDefinedContentModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="selfDefinedContentModalLabel">新增自定義欄位</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{% url 'save_other_profile' 'selfDefinedContent' %}">
               {% csrf_token %}
-              {{ self_introduction_form|crispy }}
-              <div class="model-footer">
+              {{ empty_self_defined_content_form | crispy }}
+              <div class="modal-footer">
                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
             </form>
           </div>
-          <div class="model-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="model">Close</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
     </div>
-        <div class="model fade" id="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true">
-      <div class="model-dialog">
-        <div class="model-content">
-          <div class="model-header">
-            <h5 class="model-title" id="educationModalLabel">學歷</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="model" aria-label="Close"></button>
-          </div>
-          <div class="model-body">
-            <form method="post" action="{% url 'save_education' %}">
-              {% csrf_token %}
-              {{ education_form|crispy }}
-              <div class="model-footer">
-               <button type="submit" class="btn btn-primary">Save changes</button>
-              </div>
-            </form>
-          </div>
-          <div class="model-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="model">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
   {% endif %}
+
 
 
 {% endblock %}
 
 {% block scripts %}
-<script>
-  function deleteItem(model, itemId) {
-    var contentId = 'delete-item-' + model + '-' + itemId;
-    var formData = {
-      itemId: itemId, 
-      model: model, 
+{% if profile_owner.slug == user.slug %}
+  <script>
+    window.onbeforeunload = function(){
+      const cvCard = $('li.drag-drop').map(function () {
+        return $(this).attr("value")
+      }).toArray();
+      console.log(cvCard);
+      return new Promise((resolve, reject) => {
+        fetch('{% url 'save_cv_card_order' %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({ cvCard: cvCard   }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the UI or perform additional actions if needed
+                    console.log('Notifications marked as read:', data);
+                })
+                .catch(error => console.error('Error marking notifications as read:', error));
+              });
     };
+  </script>
+  <script>
+    var dragging = null;
 
-    const content = document.getElementById(contentId);
-    content.remove();
+    document.addEventListener('dragstart', function(event) {
+        var target = getLI( event.target );
+        dragging = target;
+        event.dataTransfer.setData('text/plain', null);
+        event.dataTransfer.setDragImage(self.dragging,0,0);
+    });
 
-    $.ajax({
-        type: 'DELETE',
-        url: '/delete_profile_item',  // Replace with your actual endpoint
-        contentType: 'application/json',  // Set content type to JSON
-        data: JSON.stringify(formData),
-        headers: {'X-CSRFToken': '{{ csrf_token }}' },
-        success: function(response) {
-            // Handle the server response here
-            console.log('success');
-        },
-        error: function(error) {
-            // Handle errors here
-            console.error(error);
+    document.addEventListener('dragover', function(event) {
+        event.preventDefault();
+        var target = getLI( event.target );
+        var bounding = target.getBoundingClientRect()
+        var offset = bounding.y + (bounding.height/2);
+        if ( event.clientY - offset > 0 ) {
+            target.style['border-bottom'] = 'solid 4px blue';
+            target.style['border-top'] = '';
+        } else {
+            target.style['border-top'] = 'solid 4px blue';
+            target.style['border-bottom'] = '';
         }
     });
-  }
-</script>
+
+    document.addEventListener('dragleave', function(event) {
+        var target = getLI( event.target );
+        target.style['border-bottom'] = '';
+        target.style['border-top'] = '';
+    });
+
+    document.addEventListener('drop', function(event) {
+        event.preventDefault();
+        var target = getLI( event.target );
+        if ( target.style['border-bottom'] !== '' ) {
+            target.style['border-bottom'] = '';
+            target.parentNode.insertBefore(dragging, event.target.nextSibling);
+        } else {
+            target.style['border-top'] = '';
+            target.parentNode.insertBefore(dragging, event.target);
+        }
+    });
+
+    function getLI( target ) {
+        while ( target.nodeName.toLowerCase() != 'li' && target.nodeName.toLowerCase() != 'body' ) {
+            target = target.parentNode;
+        }
+        if ( target.nodeName.toLowerCase() == 'body' ) {
+            return false;
+        } else {
+            return target;
+        }
+    }
+  </script>
+
+  <script>
+    function deleteItem(model, itemId) {
+      var contentId = 'delete-item-' + model + '-' + itemId;
+      var formData = {
+        itemId: itemId, 
+        model: model, 
+      };
+
+      const content = document.getElementById(contentId);
+      content.remove();
+
+      $.ajax({
+          type: 'DELETE',
+          url: '/delete_profile_item',  // Replace with your actual endpoint
+          contentType: 'application/json',  // Set content type to JSON
+          data: JSON.stringify(formData),
+          headers: {'X-CSRFToken': '{{ csrf_token }}' },
+          success: function(response) {
+              // Handle the server response here
+              console.log('success');
+          },
+          error: function(error) {
+              // Handle errors here
+              console.error(error);
+          }
+      });
+    }
+  </script>
+{% endif %}
 {% endblock %}

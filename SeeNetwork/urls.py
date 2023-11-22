@@ -34,12 +34,12 @@ urlpatterns = [
     path('confirm_request/<int:notification_id>', views.confirm_request, name='confirm_request'),
     path('profile/<slug:user_slug>', accounts_views.profile_view, name='profile_view'),
     path('save_profile', accounts_views.save_profile, name='save_profile'),
-    path('save_self_introduction', accounts_views.save_self_introduction, name='save_self_introduction'),
-    path('save_education', accounts_views.save_education, name='save_education'),
+    path('save_other_profile/<slug:model>', accounts_views.save_other_profile, name='save_other_profile'),
+    path('save_cv_card_order', accounts_views.save_cv_card_order, name='save_cv_card_order'),
     path('delete_profile_item', accounts_views.delete_profile_item, name='delete_profile_item'),
     path('ignore_request/<int:notification_id>', views.ignore_request, name='ignore_request'),
     path('mark_all_as_read/', views.mark_all_as_read, name='mark_all_as_read'),
     path('notifications/', views.notifications, name='notifications'),
     path('network/', views.network, name='network'),
-    path('graph/<slug:option>', views.graph, name='graph')
+    path('graph/<slug:option>', views.graph, name='graph'),
 ]

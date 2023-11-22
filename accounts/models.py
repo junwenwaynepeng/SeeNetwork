@@ -81,12 +81,21 @@ class WorkExperience(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     description = models.TextField()
+    def __str__(self):
+        return f'{self.position}, {self.company}     {self.start_date}-{self.end_date}\n{self.description}'
+
 
 class EssentialSkill(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     skill_name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     order = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        if self.description is not None:
+            return self.skill_name
+        else:
+            return f'{self.skill_name}: {self.description}'
 
 class Award(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -95,6 +104,12 @@ class Award(models.Model):
     year = models.PositiveSmallIntegerField()
     high_light = models.BooleanField()
 
+    def __str__(self):
+        if self.organization is not None:
+            return f'{self.title} ({self.organization}), {self.year}'
+        else:
+            return f'{self.title}, {self.year}'
+
 class Publication(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -102,6 +117,9 @@ class Publication(models.Model):
     publication_date = models.DateField()
     link = models.URLField(max_length=200, null=True, blank=True)
     high_light = models.BooleanField()
+
+    def __str__(self):
+        return f'{self.title} ({self.publication_date.year}), {self.authors}'
 
 class SelfDefinedContent(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
