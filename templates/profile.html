@@ -57,22 +57,31 @@
         <!-- Content for the right section goes here -->
         <ul class="drag-drop" style="list-style-type: none;">
           {% for card in cards %}
-            <li class="drag-drop" value="{{ card.order }}" draggable="true">
+            <li id="delete-item-{{ card.model }}-{{ card.card_id }}" class="drag-drop" value="{{ card.order }}" draggable="true">
               <div class="card w-100 profile-adaptive">
                 <div class="card-body">
                   <div class="mb-3">
                     <label for="student_id" class="form-label fs-6 profile-adaptive">{{ card.title }}
-                    {% if profile_owner.slug == user.slug %}
-                      <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#{{ card.model }}Modal">
-                        <i class="fa fa-plus"></i>
-                      </button>
-                    {% endif %}
+                      {% if profile_owner.slug == user.slug %}
+                        {% if card.model == 'selfIntroduction' or card.card_id %} 
+                          <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#{{ card.model }}Modal">
+                            <i class="fa fa-pencil"></i>
+                          </button>
+                        {% endif %}
+                      {% endif %}
                     </label>
+                      {% if profile_owner.slug == user.slug %}
+                        {% if card.card_id %}
+                          <button type="button" class="btn btn-link float-end" onclick="deleteItem('{{ card.model }}', {{ card.card_id }})">
+                            <i class="fa fa-close"></i>
+                          </button>
+                        {% endif %}
+                      {% endif %}
                     {% if card.is_list %}
                       <ul>
                         {% for item in card.item_list %}
-                          <li>
-                            <p id="delete-item-{{ card.model }}-{{ item.id }}" class="fw-normal ms-2 fs-5 profile-adaptive">{{ item }}
+                          <li id="delete-item-{{ card.model }}-{{ item.id }}">
+                            <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ item }}
                               {% if profile_owner.slug == user.slug %}
                                 <button type="button" class="btn btn-link float-end" onclick="deleteItem('{{ card.model }}', {{ item.id }})">
                                   <i class="fa fa-minus"></i>
@@ -82,6 +91,11 @@
                           </li>
                         {% endfor %}
                       </ul>
+                      {% if profile_owner.slug == user.slug %}
+                        <button type="button" class="btn btn-link float-end" data-bs-toggle="modal" data-bs-target="#{{ card.model }}Modal">
+                          <i class="fa fa-plus"></i>
+                        </button>
+                      {% endif %}
                     {% else %}
                       <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ card.content }}</p>
                     {% endif %}
@@ -132,11 +146,16 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form method="POST" action="{% url 'save_other_profile' card.model %}">
+              <form method="post" action="{% url 'save_other_profile' card.model %}">
                 {% csrf_token %}
                 {{ card.form | crispy }}
                 <div class="modal-footer">
-                 <button type="submit" class="btn btn-primary">Save changes</button>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                  {% if card.card_id %}
+                    <button type="button" class="btn btn-primary float-end" onclick="deleteItem('{{ card.model }}', {{ card.card_id }})">
+                      Delete this card
+                    </button>
+                  {% endif %}
                 </div>
               </form>
             </div>
@@ -263,6 +282,12 @@
         itemId: itemId, 
         model: model, 
       };
+
+      // Ask for confirmation before deleting
+      var confirmDelete = window.confirm("Are you sure you want to delete this item?");
+      if (!confirmDelete) {
+          return;
+      }
 
       const content = document.getElementById(contentId);
       content.remove();

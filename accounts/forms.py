@@ -28,12 +28,12 @@ class EssentialSkillForm(forms.ModelForm):
 class AwardForm(forms.ModelForm):
     class Meta:
         model = Award
-        fields = ['title', 'organization', 'year']
+        fields = ['title', 'organization', 'year', 'high_light']
 
 class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
-        fields = ['title', 'authors', 'publication_date']
+        fields = ['title', 'authors', 'publication_date', 'link', 'high_light']
 
 class SelfDefinedContentForm(forms.ModelForm):
     class Meta:

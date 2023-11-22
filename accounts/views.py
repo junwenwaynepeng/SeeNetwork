@@ -13,6 +13,7 @@ import json, re
 
 @dataclass
 class CVCard:
+    card_id: int
     title: str
     edit_title: str
     order: int
@@ -43,32 +44,32 @@ def profile_view(request, user_slug):
     # model: self introduction
     self_introduction, created = SelfIntroduction.objects.get_or_create(user=profile_owner)
     self_introduction_form = SelfIntroductionForm(instance=self_introduction)
-    self_introduction_card = CVCard('自介', '編輯自介', curriculum_vitae.self_introduction_form_order, 'selfIntroduction', False, [], self_introduction.self_introduction, self_introduction_form)
+    self_introduction_card = CVCard(None, '自介', '編輯自介', curriculum_vitae.self_introduction_form_order, 'selfIntroduction', False, [], self_introduction.self_introduction, self_introduction_form)
     
     # model: education
     education_form = EducationForm()
     education = Education.objects.filter(user=profile_owner)
-    education_card = CVCard('學歷', '新增學歷', curriculum_vitae.education_form_order,'education', True, education, '', education_form)
+    education_card = CVCard(None, '學歷', '新增學歷', curriculum_vitae.education_form_order,'education', True, education, '', education_form)
 
     # model: work experience
     work_experience_form = WorkExperienceForm()
     work_experience = WorkExperience.objects.filter(user=profile_owner)
-    work_experience_card = CVCard('工作經歷', '新增工作經歷', curriculum_vitae.work_experience_form_order, 'workExperience', True, work_experience, '', work_experience_form)
+    work_experience_card = CVCard(None, '工作經歷', '新增工作經歷', curriculum_vitae.work_experience_form_order, 'workExperience', True, work_experience, '', work_experience_form)
 
     # model: essential skill
     essential_skill_form = EssentialSkillForm()
     essential_skill = EssentialSkill.objects.filter(user=profile_owner)
-    essential_skill_card = CVCard('專長', '新增專長', curriculum_vitae.essential_skill_form_order, 'essentialSkill', True, essential_skill, '', essential_skill_form)
+    essential_skill_card = CVCard(None, '專長', '新增專長', curriculum_vitae.essential_skill_form_order, 'essentialSkill', True, essential_skill, '', essential_skill_form)
     
     # model: award
     award_form = AwardForm()
     award = Award.objects.filter(user=profile_owner)
-    award_card = CVCard('獎項', '新增獎項', curriculum_vitae.award_form_order, 'award', True, award, '', award_form)
+    award_card = CVCard(None, '獎項', '新增獎項', curriculum_vitae.award_form_order, 'award', True, award, '', award_form)
     
     # model: publication
     publication_form = PublicationForm()
     publication = Publication.objects.filter(user=profile_owner)
-    publication_card = CVCard('文章', '新增文章', curriculum_vitae.publication_form_order, 'publication', True, publication, '', publication_form)
+    publication_card = CVCard(None, '文章', '新增文章', curriculum_vitae.publication_form_order, 'publication', True, publication, '', publication_form)
 
     # model: self_defined_content
     self_defined_content_form = SelfDefinedContentForm()
@@ -76,7 +77,7 @@ def profile_view(request, user_slug):
     self_defined_content_cards = []
     for card in self_defined_content:
         card_form = SelfDefinedContentForm(instance=card)
-        self_defined_content_card = CVCard(card.title, f'修改{card.title}', card.form_order, f'selfDefinedContent{card.id}', False, [], card.content, card_form)
+        self_defined_content_card = CVCard(card.id, card.title, f'修改{card.title}', card.form_order, f'selfDefinedContent{card.id}', False, [], card.content, card_form)
         self_defined_content_cards.append((self_defined_content_card, self_defined_content_card.order))
     # setup cards
     card_order = [
@@ -110,15 +111,24 @@ def save_profile(request):
 
 @login_required
 def save_other_profile(request, model):
+    def extract_number_from_string(input_string):
+        # Use regular expression to find the number at the end of the string
+        match = re.search(r'\d+$', input_string)
+
+        # Check if a match is found
+        if match:
+            return int(match.group())  # Convert the matched string to an integer
+        else:
+            return None  # Return None if no match is found
+    
     user = request.user
+    card_id = extract_number_from_string(model)
     model = re.sub(r'\d+$', '', model)
-    if request.method == 'POST' or request.method == 'UPDATE':
+    if request.method == 'POST':
         if model == 'selfIntroduction':
             self_introduction, created = SelfIntroduction.objects.get_or_create(user=user)
-            self_introduction_form = SelfIntroductionForm(request.POST, instance=self_introduction)
-            if self_introduction_form.is_valid():
-                self_introduction_form.save()
-
+            form = SelfIntroductionForm(request.POST, instance=self_introduction)
+            
         if model == 'education':
             form = EducationForm(request.POST)
         
@@ -140,21 +150,26 @@ def save_other_profile(request, model):
             form = PublicationForm(request.POST)
 
         if model == 'selfDefinedContent':
-            form = SelfDefinedContentForm(request.POST)
-            if request.method == 'POST':
+            if card_id:
+                self_defined_content = SelfDefinedContent.objects.get(id=card_id) 
+                form = SelfDefinedContentForm(request.POST, instance=self_defined_content)
+                order = self_defined_content.form_order
+            else:
+                form = SelfDefinedContentForm(request.POST)
                 all_self_defined_content = SelfDefinedContent.objects.filter(user=user)
                 if all_self_defined_content:
                     order = len(all_self_defined_content) + 6
                 else:
                     order = 6
-
+                
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = user
             if model == 'essentialSkill':
                 obj.order = order
-            if model == 'selfDefinedContent' and request.method == 'POST':
+            if model == 'selfDefinedContent':
                 obj.form_order = order
+            print('hi')
             obj.save()
 
     return HttpResponseRedirect(f"/profile/{user.slug}")
@@ -163,21 +178,25 @@ def save_other_profile(request, model):
 def delete_profile_item(request):
     user = request.user
     data = json.loads(request.body.decode('utf-8'))
-    
-    if data['model']=='education':
+    model = re.sub(r'\d+$', '', data['model'])
+    print(model)
+    if model == 'education':
         item = Education.objects.get(id=data['itemId'])
         
-    if data['model']=='workExperience':
+    if model == 'workExperience':
         item = WorkExperience.objects.get(id=data['itemId'])
         
-    if data['model']=='essentialSkill':
+    if model == 'essentialSkill':
         item = EssentialSkill.objects.get(id=data['itemId'])
 
-    if data['model']=='award':
+    if model == 'award':
         item = Award.objects.get(id=data['itemId'])
 
-    if data['model']=='publication':
+    if model == 'publication':
         item = Publication.objects.get(id=data['itemId'])
+
+    if model == 'selfDefinedContent':
+        item = SelfDefinedContent.objects.get(id=data['itemId'])
 
     item.delete()
     return redirect('profile_view', user_slug=user.slug)
