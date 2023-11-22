@@ -102,7 +102,7 @@ class Award(models.Model):
     title = models.CharField(max_length=255)
     organization = models.CharField(max_length=255, null=True, blank=True)
     year = models.PositiveSmallIntegerField()
-    high_light = models.BooleanField()
+    high_light = models.BooleanField(default=False)
 
     def __str__(self):
         if self.organization is not None:
@@ -116,7 +116,7 @@ class Publication(models.Model):
     authors = models.CharField(max_length=255)
     publication_date = models.DateField()
     link = models.URLField(max_length=200, null=True, blank=True)
-    high_light = models.BooleanField()
+    high_light = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.title} ({self.publication_date.year}), {self.authors}'
