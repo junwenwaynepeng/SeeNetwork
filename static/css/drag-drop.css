@@ -1,0 +1,11 @@
+ul.drag-drop {
+  margin:0;
+  padding:0
+}
+li.drag-drop {
+  cursor:move;
+  display:block;
+  padding:20px 10px;
+  background:white;
+  border-bottom:solid 1px gray;
+}
