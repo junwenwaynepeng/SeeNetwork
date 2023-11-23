@@ -4,6 +4,9 @@ from .models import CustomUser as User
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.helper import FormHelper
 from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction
+import datetime
+
+
 
 class SelfIntroductionForm(forms.ModelForm):
     class Meta:
@@ -14,11 +17,18 @@ class EducationForm(forms.ModelForm):
     class Meta:
         model = Education
         fields = ['school', 'degree', 'year']
+        widgets = {
+            'year': forms.NumberInput(attrs={'value': datetime.datetime.now().year}),
+        }
 
 class WorkExperienceForm(forms.ModelForm):
     class Meta:
         model = WorkExperience
         fields = ['position', 'company', 'start_date', 'end_date', 'description']
+        widgets = {
+            'start_date':  forms.widgets.DateInput(attrs={'type': 'date'}),
+            'end_date':  forms.widgets.DateInput(attrs={'type': 'date'}),
+        }
 
 class EssentialSkillForm(forms.ModelForm):
     class Meta:
@@ -29,6 +39,9 @@ class AwardForm(forms.ModelForm):
     class Meta:
         model = Award
         fields = ['title', 'organization', 'year', 'high_light']
+        widgets = {
+            'year': forms.NumberInput(attrs={'value': datetime.datetime.now().year}),
+        }
 
 class PublicationForm(forms.ModelForm):
     class Meta:

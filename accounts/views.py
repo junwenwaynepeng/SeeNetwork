@@ -19,7 +19,7 @@ class CVCard:
     order: int
     model: str
     is_list: bool
-    item_list: list
+    item_list: ('typing.Any', 'typing.Any')
     content: str
     form: 'typing.Any'
 
@@ -44,32 +44,37 @@ def profile_view(request, user_slug):
     # model: self introduction
     self_introduction, created = SelfIntroduction.objects.get_or_create(user=profile_owner)
     self_introduction_form = SelfIntroductionForm(instance=self_introduction)
-    self_introduction_card = CVCard(None, '自介', '編輯自介', curriculum_vitae.self_introduction_form_order, 'selfIntroduction', False, [], self_introduction.self_introduction, self_introduction_form)
+    self_introduction_card = CVCard(None, '自介', '編輯自介', curriculum_vitae.self_introduction_form_order, 'selfIntroduction', False, list(zip([], [])), self_introduction.self_introduction, self_introduction_form)
     
     # model: education
     education_form = EducationForm()
     education = Education.objects.filter(user=profile_owner)
-    education_card = CVCard(None, '學歷', '新增學歷', curriculum_vitae.education_form_order,'education', True, education, '', education_form)
+    education_form_list = [EducationForm(instance=item) for item in education]
+    education_card = CVCard(None, '學歷', '新增學歷', curriculum_vitae.education_form_order,'education', True, list(zip(education, education_form_list)), '', education_form)
 
     # model: work experience
     work_experience_form = WorkExperienceForm()
     work_experience = WorkExperience.objects.filter(user=profile_owner)
-    work_experience_card = CVCard(None, '工作經歷', '新增工作經歷', curriculum_vitae.work_experience_form_order, 'workExperience', True, work_experience, '', work_experience_form)
+    work_experience_form_list = [WorkExperienceForm(instance=item) for item in work_experience]
+    work_experience_card = CVCard(None, '工作經歷', '新增工作經歷', curriculum_vitae.work_experience_form_order, 'workExperience', True, list(zip(work_experience, work_experience_form_list)), '', work_experience_form)
 
     # model: essential skill
     essential_skill_form = EssentialSkillForm()
     essential_skill = EssentialSkill.objects.filter(user=profile_owner)
-    essential_skill_card = CVCard(None, '專長', '新增專長', curriculum_vitae.essential_skill_form_order, 'essentialSkill', True, essential_skill, '', essential_skill_form)
+    essential_skill_form_list = [EssentialSkillForm(instance=item) for item in essential_skill]
+    essential_skill_card = CVCard(None, '專長', '新增專長', curriculum_vitae.essential_skill_form_order, 'essentialSkill', True, list(zip(essential_skill, essential_skill_form_list)), '', essential_skill_form)
     
     # model: award
     award_form = AwardForm()
     award = Award.objects.filter(user=profile_owner)
-    award_card = CVCard(None, '獎項', '新增獎項', curriculum_vitae.award_form_order, 'award', True, award, '', award_form)
+    award_form_list = [AwardForm(instance=item) for item in award]
+    award_card = CVCard(None, '獎項', '新增獎項', curriculum_vitae.award_form_order, 'award', True, list(zip(award, award_form_list)), '', award_form)
     
     # model: publication
     publication_form = PublicationForm()
     publication = Publication.objects.filter(user=profile_owner)
-    publication_card = CVCard(None, '文章', '新增文章', curriculum_vitae.publication_form_order, 'publication', True, publication, '', publication_form)
+    publication_form_list = [PublicationForm(instance=item) for item in publication]
+    publication_card = CVCard(None, '文章', '新增文章', curriculum_vitae.publication_form_order, 'publication', True, list(zip(publication, publication_form_list)), '', publication_form)
 
     # model: self_defined_content
     self_defined_content_form = SelfDefinedContentForm()
@@ -77,7 +82,7 @@ def profile_view(request, user_slug):
     self_defined_content_cards = []
     for card in self_defined_content:
         card_form = SelfDefinedContentForm(instance=card)
-        self_defined_content_card = CVCard(card.id, card.title, f'修改{card.title}', card.form_order, f'selfDefinedContent{card.id}', False, [], card.content, card_form)
+        self_defined_content_card = CVCard(card.id, card.title, f'修改{card.title}', card.form_order, f'selfDefinedContent{card.id}', False, list(zip([], [])), card.content, card_form)
         self_defined_content_cards.append((self_defined_content_card, self_defined_content_card.order))
     # setup cards
     card_order = [
@@ -90,7 +95,9 @@ def profile_view(request, user_slug):
     ] + self_defined_content_cards
     card_order = sorted(card_order, key=itemgetter(1))
     cards = [card[0] for card in card_order]
-
+    for card in cards:
+        for form in card.item_list:
+            print(list(form))
     return render(request, 'profile.html', {
         'profile_owner': profile_owner, 
         'profile_form': profile_form, 
@@ -169,7 +176,6 @@ def save_other_profile(request, model):
                 obj.order = order
             if model == 'selfDefinedContent':
                 obj.form_order = order
-            print('hi')
             obj.save()
 
     return HttpResponseRedirect(f"/profile/{user.slug}")
@@ -210,7 +216,7 @@ def save_cv_card_order(request):
             return False
     user = request.user
     new_order = json.loads(request.body.decode('utf-8'))['cvCard']
-    new_order = [eval(order) for order in new_order]
+    new_order = [order for order in new_order]
     curriculum_vitae, created = CurriculumVitae.objects.get_or_create(user=user)
     self_defined_content = SelfDefinedContent.objects.filter(user=user)
     self_defined_content_cards = [[card, card.form_order] for card in self_defined_content]
