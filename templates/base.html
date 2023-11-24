@@ -18,7 +18,9 @@
     {% bootstrap_messages %}
     
     <link rel="stylesheet" href="{% static 'css/dark-light.css' %}">
-    <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nav.css' %}"> 
+
+
     {% block stylesheet %}{% endblock %}
     <style>
       body {
@@ -42,12 +44,30 @@
     <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     </script>  
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{% static 'plugins/js/highlight.min.js' %}"></script>
+    <script async>
+      window.MathJax = {
+        loader: {
+          load: ['[tex]/mathtools']
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        packages: {
+          '[+]': ['mathtools']
+        },
+      };
+
+      (function () {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+        script.async = true;
+        document.head.appendChild(script);
+      })();
+</script>
+
   </body>
   {% block scripts %}{% endblock %}
 </html>

@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.text import slugify
 import random
 import string
+from martor.models import MartorField
 
 def random_string_generator(size=10, chars=string.ascii_lowercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -80,7 +81,7 @@ class WorkExperience(models.Model):
     company = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
-    description = models.TextField()
+    description = MartorField(null=True, blank=True)
     def __str__(self):
         return f'{self.position}, {self.company}     {self.start_date}-{self.end_date}\n{self.description}'
 
@@ -88,7 +89,7 @@ class WorkExperience(models.Model):
 class EssentialSkill(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     skill_name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
+    description = MartorField(null=True, blank=True)
     order = models.PositiveSmallIntegerField(validators=[MinValueValidator(1950), MaxValueValidator(2100)])
 
     def __str__(self):
@@ -124,12 +125,12 @@ class Publication(models.Model):
 class SelfDefinedContent(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    content = models.TextField()
+    content = MartorField(null=True, blank=True)
     form_order = models.PositiveSmallIntegerField()
 
 class SelfIntroduction(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    self_introduction = models.TextField(null=True, blank=True)
+    self_introduction = MartorField(blank=True, null=True)
 
 class CurriculumVitae(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
