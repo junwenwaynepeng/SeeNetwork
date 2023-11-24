@@ -14,6 +14,7 @@ bs4 = "*"
 django-bootstrap5 = "*"
 django-crispy-forms = "*"
 crispy-bootstrap5 = "*"
+martor = "*"
 
 [dev-packages]
 

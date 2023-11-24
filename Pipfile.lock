@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "aa8358732327275caf886c0819a6282fed30b8cbeb6fc490c24ccfdfff3af96e"
+            "sha256": "5743a73ca6aaabe4ef1166cd5609f8f43e71db56445438f053a7c187220ab11e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -39,6 +39,14 @@
             "markers": "python_full_version >= '3.6.0'",
             "version": "==4.12.2"
         },
+        "bleach": {
+            "hashes": [
+                "sha256:0a31f1837963c41d46bbf1331b8778e1308ea0791db03cc4e7357b97cf42a8fe",
+                "sha256:3225f354cfc436b9789c66c4ee030194bee0568fbf9cbdad3bc8b5c26c5f12b6"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==6.1.0"
+        },
         "bs4": {
             "hashes": [
                 "sha256:36ecea1fd7cc5c0c6e4a1ff075df26d50da647b75376626cc186e2212886dd3a"
@@ -46,13 +54,7 @@
             "index": "pypi",
             "version": "==0.0.1"
         },
-        "colorama": {
-            "hashes": [
-                "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44",
-                "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"
-            ],
-            "markers": "sys_platform == 'win32'",
-            "version": "==0.4.6"
+
         },
         "crispy-bootstrap5": {
             "hashes": [
@@ -125,6 +127,22 @@
             "markers": "python_version >= '3.5'",
             "version": "==2.0.1"
         },
+        "idna": {
+            "hashes": [
+                "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4",
+                "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"
+            ],
+            "markers": "python_version >= '3.5'",
+            "version": "==3.4"
+        },
+        "importlib-metadata": {
+            "hashes": [
+                "sha256:65a9576a5b2d58ca44d133c42a241905cc45e34d2c06fd5ba2bafa221e5d7b5e",
+                "sha256:766abffff765960fcc18003801f7044eb6755ffae4521c8e8ce8e83b9c9b0668"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==4.8.3"
+        },
         "ipython": {
             "hashes": [
                 "sha256:126bb57e1895594bb0d91ea3090bbd39384f6fe87c3d57fd558d0670f50339bb",
@@ -164,6 +182,14 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==3.0.2"
+        },
+        "markdown": {
+            "hashes": [
+                "sha256:cbb516f16218e643d8e0a95b309f77eb118cb138d39a4f27851e6a63581db874",
+                "sha256:f5da449a6e1c989a4cea2631aa8ee67caa5a2ef855d551c88f9e309f4634c621"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==3.3.7"
         },
         "markupsafe": {
             "hashes": [
@@ -230,6 +256,13 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==2.1.3"
+        },
+        "martor": {
+            "hashes": [
+                "sha256:93bcc97898c6739c2adadfc4f20640cf27e94dae2e3773d18168b446c3d7e7ed"
+            ],
+            "index": "pypi",
+            "version": "==1.6.28"
         },
         "matplotlib-inline": {
             "hashes": [
@@ -299,6 +332,14 @@
             "index": "pypi",
             "version": "==0.3.2"
         },
+        "requests": {
+            "hashes": [
+                "sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f",
+                "sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1"
+            ],
+            "markers": "python_version >= '3.7'",
+            "version": "==2.31.0"
+        },
         "six": {
             "hashes": [
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
@@ -358,15 +399,14 @@
                 "sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a",
                 "sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda"
             ],
-            "markers": "sys_platform == 'win32'",
-            "version": "==2023.3"
-        },
+
         "wcwidth": {
             "hashes": [
                 "sha256:f01c104efdf57971bcb756f054dd58ddec5204dd15fa31d6503ea57947d97c02",
                 "sha256:f26ec43d96c8cbfed76a5075dac87680124fa84e0855195a6184da9c187f133c"
             ],
             "version": "==0.2.12"
+
         }
     },
     "develop": {}

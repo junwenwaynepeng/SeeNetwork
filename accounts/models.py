@@ -66,7 +66,7 @@ class Education(models.Model):
     school = models.CharField(max_length=255)
     department = models.CharField(max_length=50, null=True, blank=True)
     degree = models.CharField(max_length=20)
-    year = models.PositiveSmallIntegerField()
+    year = models.PositiveSmallIntegerField(validators=[MinValueValidator(1950), MaxValueValidator(2100)])
     def __str__(self):
         if self.department==None:
             return f'{self.school}, {self.degree}, {self.year}'
@@ -89,7 +89,7 @@ class EssentialSkill(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     skill_name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    order = models.PositiveSmallIntegerField()
+    order = models.PositiveSmallIntegerField(validators=[MinValueValidator(1950), MaxValueValidator(2100)])
 
     def __str__(self):
         if self.description is not None:
@@ -101,7 +101,7 @@ class Award(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     organization = models.CharField(max_length=255, null=True, blank=True)
-    year = models.PositiveSmallIntegerField()
+    year = models.PositiveSmallIntegerField(validators=[MinValueValidator(1950), MaxValueValidator(2100)])
     high_light = models.BooleanField(default=False)
 
     def __str__(self):
