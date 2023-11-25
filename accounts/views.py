@@ -95,9 +95,6 @@ def profile_view(request, user_slug):
     ] + self_defined_content_cards
     card_order = sorted(card_order, key=itemgetter(1))
     cards = [card[0] for card in card_order]
-    for card in cards:
-        for form in card.item_list:
-            print(list(form))
     return render(request, 'profile.html', {
         'profile_owner': profile_owner, 
         'profile_form': profile_form, 
@@ -230,3 +227,7 @@ def save_cv_card_order(request):
             card[0].save()
     curriculum_vitae.save()
     return JsonResponse({'message': 'mark all notification as read'})
+
+@login_required
+def settings(request):
+    return JsonResponse({})

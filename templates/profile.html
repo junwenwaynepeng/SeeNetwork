@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load martortags %}
 {% block stylesheet %}
   <link rel="stylesheet" href="{% static 'css/dark-light.css' %}">
   <link rel="stylesheet" href="{% static 'css/drag-drop.css' %}">
-  
+  <link href="{% static 'plugins/css/ace.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+  <link href="{% static 'plugins/css/resizable.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+  <link href="{% static 'martor/css/martor.bootstrap.min.css' %}" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
 {% load user_filter %}
 {% block title %}User Profile{% endblock %}
@@ -101,7 +104,7 @@
                         </button>
                       {% endif %}
                     {% else %}
-                      <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ card.content }}</p>
+                      <p class="fw-normal ms-2 fs-5 profile-adaptive">{{ card.content | safe_markdown }}</p>
                     {% endif %}
                   </div>
                 </div>
@@ -129,7 +132,7 @@
           <div class="modal-body">
             <form method="post" action="{% url 'save_profile' %}">
               {% csrf_token %}
-              {{ profile_form | crispy }}
+              {{ profile_form | crispy}}
               <div class="modal-footer">
                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
@@ -152,7 +155,7 @@
             <div class="modal-body">
               <form method="post" action="{% url 'save_other_profile' card.model %}">
                 {% csrf_token %}
-                {{ card.form |crispy }}
+                {{ card.form | crispy }}
                 <div class="modal-footer">
                   <button type="submit" class="btn btn-primary">Save changes</button>
                   {% if card.card_id %}
@@ -250,6 +253,8 @@
                 })
                 .catch(error => console.error('Error save cv card order:', error));
               });
+      $(window).unbind();
+      return undefined;
     };
   </script>
   <script>
@@ -341,6 +346,20 @@
     }
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-bootstrap/0.5pre/js/jquery-1.8.3.min.js" integrity="sha512-J9QfbPuFlqGD2CYVCa6zn8/7PEgZnGpM5qtFOBZgwujjDnG5w5Fjx46YzqvIh/ORstcj7luStvvIHkisQi5SKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+  <script>
+    $('.martor-preview pre').each(function(i, block){
+        hljs.highlightBlock(block);
+    });
+  </script>
+  <script type="text/javascript" src="{% static 'plugins/js/ace.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/mode-markdown.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/ext-language_tools.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/theme-github.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/typo.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/spellcheck.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/highlight.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/resizable.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'plugins/js/emojis.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'martor/js/martor.bootstrap.min.js' %}"></script>
 {% endif %}
 {% endblock %}
