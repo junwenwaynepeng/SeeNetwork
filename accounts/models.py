@@ -4,6 +4,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import random
 import string
 from martor.models import MartorField
@@ -51,6 +53,7 @@ class CustomUser(AbstractUser):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.username))
         super(CustomUser, self).save(*args, **kwargs)
+        
 
 class PrivateSetting(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -67,6 +70,7 @@ class PrivateSetting(models.Model):
 class ProfilePageSetting(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     url = models.URLField(max_length=200, null=True, blank=True, help_text=_('If you set a page link here, we will use this page as your profile page'))
+    use_custom_page = models.BooleanField(default=False)
 
 class Contact(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -88,6 +92,14 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.user.username
+
+@receiver(post_save, sender=CustomUser)
+def create_other_setting(sender, instance, created, **kwargs):
+    if created:
+        private_setting, new = PrivateSetting.objects.get_or_create(user=instance)
+        profile_page_setting, new = ProfilePageSetting.objects.get_or_create(user=instance)
+        contact, new = Contact.objects.get_or_create(user=instance)
+
 
 class Education(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

@@ -5,7 +5,7 @@ ul.drag-drop {
 li.drag-drop {
   cursor:move;
   display:block;
-  padding:0px 10px 30px 10px;
+  padding: 8px 0px 24px 0px;
   background:#0f172a;
-  border-bottom:solid 1px #0f172a;
+
 }

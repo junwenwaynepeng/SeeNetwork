@@ -37,6 +37,10 @@ def signup(request):
 
 def profile_view(request, user_slug):
     profile_owner = get_object_or_404(User, slug=user_slug)
+    profile_page_setting = get_object_or_404(ProfilePageSetting, user=profile_owner)
+    if profile_page_setting.use_custom_page:
+        return HttpResponseRedirect(profile_page_setting.url)
+
     profile_form = UserProfileForm(instance=profile_owner)
     
     # model: curricumlum vitae
@@ -214,13 +218,14 @@ def save_cv_card_order(request):
             return False
     user = request.user
     new_order = json.loads(request.body.decode('utf-8'))['cvCard']
-    new_order = [order for order in new_order]
+    new_order = [int(order) for order in new_order]
     curriculum_vitae, created = CurriculumVitae.objects.get_or_create(user=user)
     self_defined_content = SelfDefinedContent.objects.filter(user=user)
     self_defined_content_cards = [[card, card.form_order] for card in self_defined_content]
     predefined_cards =[[field.name, getattr(curriculum_vitae, field.name)] for field in CurriculumVitae._meta.get_fields() if type(getattr(curriculum_vitae, field.name))==int and field.name!='id']
     cards = sorted(self_defined_content_cards + predefined_cards, key=itemgetter(1))
     for card in cards:
+        print(card, new_order)
         if type(card[0]) is str:
             setattr(curriculum_vitae, card[0], new_order.index(card[1]))
         else:
@@ -244,3 +249,19 @@ def settings(request):
         'contact': {'title': _('Contact'), 'form': contact_form},
     }
     return render(request, 'settings.html', {'forms': forms})
+
+@login_required
+def save_setting(request, modal):
+    user = request.user
+    if request.method == 'POST':
+        if modal == 'private':
+            private_setting, created = PrivateSetting.objects.get_or_create(user=user)
+            form = PrivateSettingForm(request.POST, instance=private_setting)
+        if modal == 'profilePage':
+            profile_page_setting, created = ProfilePageSetting.objects.get_or_create(user=user)
+            form = ProfilePageSettingForm(request.POST, instance=profile_page_setting)
+        if modal == 'contact':
+            contact, created = Contact.objects.get_or_create(user=user)
+            form = ContactForm(request.POST,instance=profile_page_setting)
+        form.save()
+    return HttpResponseRedirect("/settings")

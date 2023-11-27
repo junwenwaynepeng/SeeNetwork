@@ -12,9 +12,9 @@
 {% block title %}User Profile{% endblock %}
 
 {% block content %}
-  <main class="flex gap-x-10 mt-10">
+  <main class="flex justify-center gap-x-10 mt-1">
     <!-- Left Section -->
-    <div class="w-2/6">
+    <div class="w-2/6 mt-2">
       <div class="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-amber-50 shadow p-3">
         <strong class="text-xl font-medium font-bold text-black-600">基本資料</strong>
 
@@ -98,7 +98,7 @@
                     </button>
                   {% endif %}
                 {% else %}
-                  {{ card.content | safe_markdown }}
+                  {% if card.content %}{{ card.content | safe_markdown }}{% endif %}
                 {% endif %}
               </div>
             </div>

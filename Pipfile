@@ -15,6 +15,8 @@ django-bootstrap5 = "*"
 django-crispy-forms = "*"
 crispy-bootstrap5 = "*"
 martor = "*"
+thefuzz = "*"
+fuzzychinese = "*"
 django-tailwind = {extras = ["reload"], version = "*"}
 
 [dev-packages]

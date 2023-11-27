@@ -19,7 +19,7 @@
 <div class="tab-content adaptive" id="nav-tabContent">
 	{% for key, value in forms.items %}
 	  <div class="tab-pane fade show {% if key.first %}active{% endif %}" id="nav-{{ key }}" role="tabpanel" aria-labelledby="nav-{{ key }}-tab">
-	    <form method="post" action="{% url 'save_profile' %}">
+	    <form method="post" action="{% url 'save_setting' key %}">
 	      {% csrf_token %}
 	      {{ value.form | crispy}}
 	      <div class="modal-footer">
