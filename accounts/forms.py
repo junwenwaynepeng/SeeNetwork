@@ -4,10 +4,31 @@ from django.forms import SelectDateWidget
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.helper import FormHelper
 from .models import CustomUser as User
-from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction
+from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction, PrivateSetting, ProfilePageSetting, Contact
 import datetime
 
+class PrivateSettingForm(forms.ModelForm):
+    class Meta:
+        model = PrivateSetting
+        fields = ['display_name', 'display_student_id', 'display_nick_name', 'display_gender', 'display_department', 'display_cv']
+        widget ={
+            'display_name': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayName'}),
+            'display_student_id': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayStudentId'}),
+            'display_nick_name': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayNickName'}),
+            'display_gender': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayGender'}),
+            'display_department': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayDepartment'}),
+            'display_cv': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayCV'}),
+        }
 
+class ProfilePageSettingForm(forms.ModelForm):
+    class Meta:
+        model = ProfilePageSetting
+        fields = ['url']
+
+class ContactForm(forms.ModelForm): 
+    class Meta:
+        model = Contact
+        fields = ['facebook', 'twitter', 'instagram', 'linkedin', 'snapchat', 'whatsapp', 'telegram', 'skype', 'discord', 'tiktok', 'line']
 
 class SelfIntroductionForm(forms.ModelForm):
     class Meta:

@@ -44,4 +44,6 @@ urlpatterns = [
     path('network/', views.network, name='network'),
     path('graph/<slug:option>', views.graph, name='graph'),
     path('martor/', include('martor.urls')),
+    path('settings/', accounts_views.settings, name='settings'),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]

@@ -44,7 +44,18 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "crispy_forms",
     "crispy_bootstrap5",
+    'tailwind',
     'martor',
+    'django_browser_reload',
+    'theme',
+]
+
+TAILWIND_APP_NAME = 'theme'
+NPM_BIN_PATH = "C:\\Program Files\\nodejs\\npm.cmd"
+
+
+INTERNAL_IPS = [
+    "127.0.0.1:8000",
 ]
 
 MIDDLEWARE = [
@@ -55,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = 'SeeNetwork.urls'

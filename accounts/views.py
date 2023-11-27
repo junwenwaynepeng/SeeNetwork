@@ -1,12 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.translation import gettext as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
-from .forms import SignUpForm, UserProfileForm, SelfIntroductionForm, EducationForm, WorkExperienceForm, EssentialSkillForm, AwardForm, PublicationForm, SelfDefinedContentForm
+from .forms import SignUpForm, UserProfileForm, SelfIntroductionForm, EducationForm, WorkExperienceForm, EssentialSkillForm, AwardForm, PublicationForm, SelfDefinedContentForm, PrivateSettingForm, ProfilePageSettingForm, ContactForm
 from .models import CustomUser as User
-from .models import WorkExperience, EssentialSkill, Award, Publication, CurriculumVitae, Education, SelfIntroduction, SelfDefinedContent
+from .models import WorkExperience, EssentialSkill, Award, Publication, CurriculumVitae, Education, SelfIntroduction, SelfDefinedContent, PrivateSetting, ProfilePageSetting, Contact
 from operator import itemgetter
 from dataclasses import dataclass
 import json, re
@@ -230,4 +231,16 @@ def save_cv_card_order(request):
 
 @login_required
 def settings(request):
-    return JsonResponse({})
+    user = request.user
+    private_setting, created = PrivateSetting.objects.get_or_create(user=user)
+    private_setting_form = PrivateSettingForm(instance=private_setting)
+    profile_page_setting, created = ProfilePageSetting.objects.get_or_create(user=user)
+    profile_page_setting_form = ProfilePageSettingForm(instance=profile_page_setting)
+    contact, created = Contact.objects.get_or_create(user=user)
+    contact_form = ContactForm(instance=contact)
+    forms = {
+        'private': {'title': _('Who can see me'), 'form': private_setting_form},
+        'profilePage': {'title': _('Customize Profile Page'), 'form': profile_page_setting_form},
+        'contact': {'title': _('Contact'), 'form': contact_form},
+    }
+    return render(request, 'settings.html', {'forms': forms})

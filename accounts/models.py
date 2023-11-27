@@ -3,6 +3,7 @@ from django.contrib.auth.models import BaseUserManager
 from django.core.validators import MaxValueValidator, MinValueValidator 
 from django.db import models
 from django.utils.text import slugify
+from django.utils.translation import gettext as _
 import random
 import string
 from martor.models import MartorField
@@ -19,9 +20,9 @@ def unique_slugify(instance, slug):
     return unique_slug
 
 class Gender(models.TextChoices):
-    male = 'm', 'Male'
-    female = 'f', 'Female'
-    none = 'n', 'Neutral'
+    male = 'm', _('Male')
+    female = 'f', _('Female')
+    none = 'n', _('Neutral')
 
 class Department(models.TextChoices):
     law = 'law', '法律系'
@@ -58,9 +59,35 @@ class PrivateSetting(models.Model):
     display_nick_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     display_gender = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     display_department = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
+    display_cv = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     class Meta:
-        verbose_name = 'Private Setting'
-        verbose_name_plural = 'Private Settings'
+        verbose_name = _('Private Setting')
+        verbose_name_plural = _('Private Settings')
+
+class ProfilePageSetting(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    url = models.URLField(max_length=200, null=True, blank=True, help_text=_('If you set a page link here, we will use this page as your profile page'))
+
+class Contact(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    
+    # Social Media Fields
+    facebook = models.CharField(max_length=100, blank=True, null=True)
+    twitter = models.CharField(max_length=100, blank=True, null=True)
+    instagram = models.CharField(max_length=100, blank=True, null=True)
+    linkedin = models.CharField(max_length=100, blank=True, null=True)
+    snapchat = models.CharField(max_length=100, blank=True, null=True)
+    whatsapp = models.CharField(max_length=100, blank=True, null=True)
+    telegram = models.CharField(max_length=100, blank=True, null=True)
+    skype = models.CharField(max_length=100, blank=True, null=True)
+    discord = models.CharField(max_length=100, blank=True, null=True)
+    tiktok = models.CharField(max_length=100, blank=True, null=True)
+    line = models.CharField(max_length=100, blank=True, null=True)
+
+    # Add more social media fields as needed
+
+    def __str__(self):
+        return self.user.username
 
 class Education(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
