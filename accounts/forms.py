@@ -23,7 +23,7 @@ class PrivateSettingForm(forms.ModelForm):
 class ProfilePageSettingForm(forms.ModelForm):
     class Meta:
         model = ProfilePageSetting
-        fields = ['url']
+        fields = ['url', 'use_custom_page']
 
 class ContactForm(forms.ModelForm): 
     class Meta:
