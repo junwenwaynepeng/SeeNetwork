@@ -120,9 +120,9 @@ class WorkExperience(models.Model):
     company = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
-    description = MartorField(null=True, blank=True)
+    detail = MartorField(null=True, blank=True)
     def __str__(self):
-        return f'{self.position}, {self.company}     {self.start_date}-{self.end_date}\n{self.description}'
+        return f'{self.position}, {self.company}     {self.start_date}-{self.end_date}\n{self.detail}'
 
 
 class EssentialSkill(models.Model):

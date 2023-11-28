@@ -18,9 +18,9 @@ class CVCard:
     title: str
     edit_title: str
     order: int
-    model: str
+    modal: str
     is_list: bool
-    item_list: ('typing.Any', 'typing.Any')
+    item_list: list(('typing.Any', 'typing.Any'))
     content: str
     form: 'typing.Any'
 
@@ -43,45 +43,45 @@ def profile_view(request, user_slug):
 
     profile_form = UserProfileForm(instance=profile_owner)
     
-    # model: curricumlum vitae
+    # modal: curricumlum vitae
     curriculum_vitae, created = CurriculumVitae.objects.get_or_create(user=profile_owner)
     
-    # model: self introduction
+    # modal: self introduction
     self_introduction, created = SelfIntroduction.objects.get_or_create(user=profile_owner)
     self_introduction_form = SelfIntroductionForm(instance=self_introduction)
     self_introduction_card = CVCard(None, '自介', '編輯自介', curriculum_vitae.self_introduction_form_order, 'selfIntroduction', False, list(zip([], [])), self_introduction.self_introduction, self_introduction_form)
     
-    # model: education
+    # modal: education
     education_form = EducationForm()
     education = Education.objects.filter(user=profile_owner)
     education_form_list = [EducationForm(instance=item) for item in education]
     education_card = CVCard(None, '學歷', '新增學歷', curriculum_vitae.education_form_order,'education', True, list(zip(education, education_form_list)), '', education_form)
 
-    # model: work experience
+    # modal: work experience
     work_experience_form = WorkExperienceForm()
     work_experience = WorkExperience.objects.filter(user=profile_owner)
     work_experience_form_list = [WorkExperienceForm(instance=item) for item in work_experience]
     work_experience_card = CVCard(None, '工作經歷', '新增工作經歷', curriculum_vitae.work_experience_form_order, 'workExperience', True, list(zip(work_experience, work_experience_form_list)), '', work_experience_form)
 
-    # model: essential skill
+    # modal: essential skill
     essential_skill_form = EssentialSkillForm()
     essential_skill = EssentialSkill.objects.filter(user=profile_owner)
     essential_skill_form_list = [EssentialSkillForm(instance=item) for item in essential_skill]
     essential_skill_card = CVCard(None, '專長', '新增專長', curriculum_vitae.essential_skill_form_order, 'essentialSkill', True, list(zip(essential_skill, essential_skill_form_list)), '', essential_skill_form)
     
-    # model: award
+    # modal: award
     award_form = AwardForm()
     award = Award.objects.filter(user=profile_owner)
     award_form_list = [AwardForm(instance=item) for item in award]
     award_card = CVCard(None, '獎項', '新增獎項', curriculum_vitae.award_form_order, 'award', True, list(zip(award, award_form_list)), '', award_form)
     
-    # model: publication
+    # modal: publication
     publication_form = PublicationForm()
     publication = Publication.objects.filter(user=profile_owner)
     publication_form_list = [PublicationForm(instance=item) for item in publication]
     publication_card = CVCard(None, '文章', '新增文章', curriculum_vitae.publication_form_order, 'publication', True, list(zip(publication, publication_form_list)), '', publication_form)
 
-    # model: self_defined_content
+    # modal: self_defined_content
     self_defined_content_form = SelfDefinedContentForm()
     self_defined_content = SelfDefinedContent.objects.filter(user=profile_owner)
     self_defined_content_cards = []
@@ -119,7 +119,7 @@ def save_profile(request):
     return HttpResponseRedirect(f"/profile/{user.slug}")
 
 @login_required
-def save_other_profile(request, model):
+def save_other_profile(request, modal):
     def extract_number_from_string(input_string):
         # Use regular expression to find the number at the end of the string
         match = re.search(r'\d+$', input_string)
@@ -131,20 +131,20 @@ def save_other_profile(request, model):
             return None  # Return None if no match is found
     
     user = request.user
-    card_id = extract_number_from_string(model)
-    model = re.sub(r'\d+$', '', model)
+    card_id = extract_number_from_string(modal)
+    modal = re.sub(r'\d+$', '', modal)
     if request.method == 'POST':
-        if model == 'selfIntroduction':
+        if modal == 'selfIntroduction':
             self_introduction, created = SelfIntroduction.objects.get_or_create(user=user)
             form = SelfIntroductionForm(request.POST, instance=self_introduction)
             
-        if model == 'education':
+        if modal == 'education':
             form = EducationForm(request.POST)
         
-        if model == 'workExperience':
+        if modal == 'workExperience':
             form = WorkExperienceForm(request.POST)
         
-        if model == 'essentialSkill':
+        if modal == 'essentialSkill':
             form = EssentialSkillForm(request.POST)
             all_essential_skill = EssentialSkill.objects.filter(user=user)
             if all_essential_skill:
@@ -152,13 +152,13 @@ def save_other_profile(request, model):
             else:
                 order = 0
             
-        if model == 'award':
+        if modal == 'award':
             form = AwardForm(request.POST)
 
-        if model == 'publication':
+        if modal == 'publication':
             form = PublicationForm(request.POST)
 
-        if model == 'selfDefinedContent':
+        if modal == 'selfDefinedContent':
             if card_id:
                 self_defined_content = SelfDefinedContent.objects.get(id=card_id) 
                 form = SelfDefinedContentForm(request.POST, instance=self_defined_content)
@@ -174,9 +174,9 @@ def save_other_profile(request, model):
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = user
-            if model == 'essentialSkill':
+            if modal == 'essentialSkill':
                 obj.order = order
-            if model == 'selfDefinedContent':
+            if modal == 'selfDefinedContent':
                 obj.form_order = order
             obj.save()
 
@@ -186,24 +186,24 @@ def save_other_profile(request, model):
 def delete_profile_item(request):
     user = request.user
     data = json.loads(request.body.decode('utf-8'))
-    model = re.sub(r'\d+$', '', data['model'])
-    print(model)
-    if model == 'education':
+    modal = re.sub(r'\d+$', '', data['modal'])
+    print(modal)
+    if modal == 'education':
         item = Education.objects.get(id=data['itemId'])
         
-    if model == 'workExperience':
+    if modal == 'workExperience':
         item = WorkExperience.objects.get(id=data['itemId'])
         
-    if model == 'essentialSkill':
+    if modal == 'essentialSkill':
         item = EssentialSkill.objects.get(id=data['itemId'])
 
-    if model == 'award':
+    if modal == 'award':
         item = Award.objects.get(id=data['itemId'])
 
-    if model == 'publication':
+    if modal == 'publication':
         item = Publication.objects.get(id=data['itemId'])
 
-    if model == 'selfDefinedContent':
+    if modal == 'selfDefinedContent':
         item = SelfDefinedContent.objects.get(id=data['itemId'])
 
     item.delete()

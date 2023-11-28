@@ -46,10 +46,11 @@ class EducationForm(forms.ModelForm):
 class WorkExperienceForm(forms.ModelForm):
     class Meta:
         model = WorkExperience
-        fields = ['position', 'company', 'start_date', 'end_date', 'description']
+        fields = ['position', 'company', 'start_date', 'end_date', 'detail']
         widgets = {
-            'start_date':  forms.widgets.DateInput(attrs={'type': 'date'}),
-            'end_date':  forms.widgets.DateInput(attrs={'type': 'date'}),
+            'position': forms.widgets.TextInput(attrs={'class': 'rounded'}),
+            'start_date':  forms.widgets.DateInput(attrs={'type': 'date', 'class': 'rounded'}),
+            'end_date':  forms.widgets.DateInput(attrs={'type': 'date',  'class': 'rounded'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -59,7 +60,7 @@ class WorkExperienceForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         # Customize the widget for the start_date field
-        self.fields['start_date'].widget = SelectDateWidget(years=range(1990, 2030))
+
 
 class EssentialSkillForm(forms.ModelForm):
     class Meta:
