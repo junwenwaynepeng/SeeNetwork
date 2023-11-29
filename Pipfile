@@ -18,6 +18,7 @@ martor = "*"
 thefuzz = "*"
 fuzzychinese = "*"
 django-tailwind = {extras = ["reload"], version = "*"}
+django-mdeditor = "*"
 
 [dev-packages]
 

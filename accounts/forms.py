@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from .models import CustomUser as User
 from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction, PrivateSetting, ProfilePageSetting, Contact
 import datetime
+from martor.widgets import MartorWidget
 
 class PrivateSettingForm(forms.ModelForm):
     class Meta:
@@ -38,7 +39,7 @@ class SelfIntroductionForm(forms.ModelForm):
 class EducationForm(forms.ModelForm):
     class Meta:
         model = Education
-        fields = ['school', 'degree', 'year']
+        fields = ['school', 'department', 'degree', 'year']
         widgets = {
             'year': forms.NumberInput(attrs={'value': datetime.datetime.now().year}),
         }

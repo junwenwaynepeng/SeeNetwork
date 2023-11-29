@@ -35,13 +35,24 @@ class Department(models.TextChoices):
 
 class CustomUser(AbstractUser):
     # Additional fields for the user profile
-    student_id = models.CharField(max_length=10, unique=True, blank=True, null=True)
+
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     nick_name = models.CharField(max_length=30, blank=True, null=True)
     gender = models.CharField(max_length=1, default='n', choices=Gender.choices)
-    department = models.CharField(max_length=10, blank=True, null=True, choices=Department.choices)
     slug = models.SlugField(max_length=25, verbose_name='User Slug', unique=True)
+    # Social Media Fields
+    facebook = models.CharField(max_length=100, blank=True, null=True)
+    twitter = models.CharField(max_length=100, blank=True, null=True)
+    instagram = models.CharField(max_length=100, blank=True, null=True)
+    linkedin = models.CharField(max_length=100, blank=True, null=True)
+    snapchat = models.CharField(max_length=100, blank=True, null=True)
+    whatsapp = models.CharField(max_length=100, blank=True, null=True)
+    telegram = models.CharField(max_length=100, blank=True, null=True)
+    skype = models.CharField(max_length=100, blank=True, null=True)
+    discord = models.CharField(max_length=100, blank=True, null=True)
+    tiktok = models.CharField(max_length=100, blank=True, null=True)
+    line = models.CharField(max_length=100, blank=True, null=True)
     def __str__(self):
         return self.username  # You can customize how user objects are displayed.
 
@@ -72,23 +83,12 @@ class ProfilePageSetting(models.Model):
     url = models.URLField(max_length=200, null=True, blank=True, help_text=_('If you set a page link here, we will use this page as your profile page'))
     use_custom_page = models.BooleanField(default=False)
 
-class Contact(models.Model):
+class StudentSetting(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    
-    # Social Media Fields
-    facebook = models.CharField(max_length=100, blank=True, null=True)
-    twitter = models.CharField(max_length=100, blank=True, null=True)
-    instagram = models.CharField(max_length=100, blank=True, null=True)
-    linkedin = models.CharField(max_length=100, blank=True, null=True)
-    snapchat = models.CharField(max_length=100, blank=True, null=True)
-    whatsapp = models.CharField(max_length=100, blank=True, null=True)
-    telegram = models.CharField(max_length=100, blank=True, null=True)
-    skype = models.CharField(max_length=100, blank=True, null=True)
-    discord = models.CharField(max_length=100, blank=True, null=True)
-    tiktok = models.CharField(max_length=100, blank=True, null=True)
-    line = models.CharField(max_length=100, blank=True, null=True)
-
-    # Add more social media fields as needed
+    student_id = models.CharField(max_length=15, unique=True, blank=True, null=True)
+    school = models.CharField(max_length=50)
+    department = models.CharField(max_length=50, null=True, blank=True)
+    degree = models.CharField(max_length=20)
 
     def __str__(self):
         return self.user.username
@@ -98,12 +98,11 @@ def create_other_setting(sender, instance, created, **kwargs):
     if created:
         private_setting, new = PrivateSetting.objects.get_or_create(user=instance)
         profile_page_setting, new = ProfilePageSetting.objects.get_or_create(user=instance)
-        contact, new = Contact.objects.get_or_create(user=instance)
-
+        StudentSetting, new = Contact.objects.get_or_create(user=instance)
 
 class Education(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    school = models.CharField(max_length=255)
+    school = models.CharField(max_length=50)
     department = models.CharField(max_length=50, null=True, blank=True)
     degree = models.CharField(max_length=20)
     year = models.PositiveSmallIntegerField(validators=[MinValueValidator(1950), MaxValueValidator(2100)])

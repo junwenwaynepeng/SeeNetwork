@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     'tailwind',
-    'martor',
     'django_browser_reload',
+    'martor',  # this need to be fixed
     'theme',
 ]
 
@@ -141,6 +141,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+MEDIA_ROOT = BASE_DIR / 'uploads'
+MEDIA_URL = '/media/'
 
 #STATIC_ROOT = BASE_DIR / 'static'
 
@@ -268,3 +271,4 @@ ALLOWED_HTML_ATTRIBUTES = [
 ]
 
 CSRF_COOKIE_HTTPONLY = False
+

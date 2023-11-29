@@ -48,3 +48,4 @@ urlpatterns = [
     path('save_setting/<slug:modal>', accounts_views.save_setting, name='save_setting'),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
+

@@ -37,7 +37,7 @@ def signup(request):
 
 def profile_view(request, user_slug):
     profile_owner = get_object_or_404(User, slug=user_slug)
-    profile_page_setting = get_object_or_404(ProfilePageSetting, user=profile_owner)
+    profile_page_setting, create = ProfilePageSetting.objects.get_or_create(user=profile_owner)
     if profile_page_setting.use_custom_page:
         return HttpResponseRedirect(profile_page_setting.url)
 
@@ -187,7 +187,6 @@ def delete_profile_item(request):
     user = request.user
     data = json.loads(request.body.decode('utf-8'))
     modal = re.sub(r'\d+$', '', data['modal'])
-    print(modal)
     if modal == 'education':
         item = Education.objects.get(id=data['itemId'])
         
@@ -225,7 +224,6 @@ def save_cv_card_order(request):
     predefined_cards =[[field.name, getattr(curriculum_vitae, field.name)] for field in CurriculumVitae._meta.get_fields() if type(getattr(curriculum_vitae, field.name))==int and field.name!='id']
     cards = sorted(self_defined_content_cards + predefined_cards, key=itemgetter(1))
     for card in cards:
-        print(card, new_order)
         if type(card[0]) is str:
             setattr(curriculum_vitae, card[0], new_order.index(card[1]))
         else:
