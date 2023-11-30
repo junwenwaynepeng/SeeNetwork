@@ -4,7 +4,7 @@ from django.forms import SelectDateWidget
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.helper import FormHelper
 from .models import CustomUser as User
-from .models import CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction, PrivateSetting, ProfilePageSetting, Contact
+from .models import StudentSetting, CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction, PrivateSetting, ProfilePageSetting, Contact
 import datetime
 from martor.widgets import MartorWidget
 
@@ -26,9 +26,20 @@ class ProfilePageSettingForm(forms.ModelForm):
         model = ProfilePageSetting
         fields = ['url', 'use_custom_page']
 
+class StudentSettingForm(forms.ModelForm):
+    class Meta:
+        model = StudentSetting
+        fields = ['student_id', 'department', 'degree', 'school']
+
+class ProfileForm(forms.ModelForm):
+    email = forms.CharField(max_length=254, required=True, widget=forms.EmailInput())
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'nick_name', 'gender', 'email']
+
 class ContactForm(forms.ModelForm): 
     class Meta:
-        model = Contact
+        model = User
         fields = ['facebook', 'twitter', 'instagram', 'linkedin', 'snapchat', 'whatsapp', 'telegram', 'skype', 'discord', 'tiktok', 'line']
 
 class SelfIntroductionForm(forms.ModelForm):
@@ -92,9 +103,5 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ('username', 'email', 'password1', 'password2')
 
-class UserProfileForm(forms.ModelForm):
-    email = forms.CharField(max_length=254, required=True, widget=forms.EmailInput())
-    class Meta:
-        model = User
-        fields = ['student_id', 'first_name', 'last_name', 'nick_name', 'gender', 'department', 'email']
+
 

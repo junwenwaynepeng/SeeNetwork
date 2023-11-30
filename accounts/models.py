@@ -26,13 +26,6 @@ class Gender(models.TextChoices):
     female = 'f', _('Female')
     none = 'n', _('Neutral')
 
-class Department(models.TextChoices):
-    law = 'law', '法律系'
-    me = 'me', '機械系'
-    bme = 'bme', '生物機電系'
-    chem = 'chem', '化學系'
-    ce = 'ce', '化工系'
-
 class CustomUser(AbstractUser):
     # Additional fields for the user profile
 
@@ -40,7 +33,7 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(max_length=30, blank=True, null=True)
     nick_name = models.CharField(max_length=30, blank=True, null=True)
     gender = models.CharField(max_length=1, default='n', choices=Gender.choices)
-    slug = models.SlugField(max_length=25, verbose_name='User Slug', unique=True)
+    slug = models.SlugField(max_length=25, verbose_name=_('User Slug'), unique=True)
     # Social Media Fields
     facebook = models.CharField(max_length=100, blank=True, null=True)
     twitter = models.CharField(max_length=100, blank=True, null=True)
@@ -57,8 +50,8 @@ class CustomUser(AbstractUser):
         return self.username  # You can customize how user objects are displayed.
 
     class Meta:
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        verbose_name = _('User')
+        verbose_name_plural = _('Users')
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -96,9 +89,9 @@ class StudentSetting(models.Model):
 @receiver(post_save, sender=CustomUser)
 def create_other_setting(sender, instance, created, **kwargs):
     if created:
-        private_setting, new = PrivateSetting.objects.get_or_create(user=instance)
-        profile_page_setting, new = ProfilePageSetting.objects.get_or_create(user=instance)
-        StudentSetting, new = Contact.objects.get_or_create(user=instance)
+        private_setting = PrivateSetting.objects.create(user=instance)
+        profile_page_setting = ProfilePageSetting.objects.create(user=instance)
+        StudentSetting = StudentSetting.objects.create(user=instance)
 
 class Education(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CurriculumVitae, CustomUser, WorkExperience, EssentialSkill, Award, Publication, Education, SelfIntroduction, SelfDefinedContent, ProfilePageSetting, PrivateSetting, Contact
+from .models import CurriculumVitae, CustomUser, WorkExperience, EssentialSkill, Award, Publication, Education, SelfIntroduction, SelfDefinedContent, ProfilePageSetting, PrivateSetting, StudentSetting
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'student_id', 'department', 'is_staff', 'date_joined', 'slug')
@@ -17,6 +17,11 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('last_login', 'date_joined'),
         }),
     )
+
+@admin.register(StudentSetting)
+class StudentSetting(admin.ModelAdmin)
+    list_display = ('user', 'student_id', 'school', 'department', 'degree')
+    search_fields = ('user')
 
 @admin.register(SelfIntroduction)
 class SelfIntroductionAdmin(admin.ModelAdmin):

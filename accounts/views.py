@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
-from .forms import SignUpForm, UserProfileForm, SelfIntroductionForm, EducationForm, WorkExperienceForm, EssentialSkillForm, AwardForm, PublicationForm, SelfDefinedContentForm, PrivateSettingForm, ProfilePageSettingForm, ContactForm
+from .forms import StudentSettingForm, ContactForm, SignUpForm, ProfileForm, SelfIntroductionForm, EducationForm, WorkExperienceForm, EssentialSkillForm, AwardForm, PublicationForm, SelfDefinedContentForm, PrivateSettingForm, ProfilePageSettingForm, ContactForm
 from .models import CustomUser as User
 from .models import WorkExperience, EssentialSkill, Award, Publication, CurriculumVitae, Education, SelfIntroduction, SelfDefinedContent, PrivateSetting, ProfilePageSetting, Contact
 from operator import itemgetter
@@ -21,7 +21,7 @@ class CVCard:
     modal: str
     is_list: bool
     item_list: list(('typing.Any', 'typing.Any'))
-    content: str
+    content: 'typing.Any'
     form: 'typing.Any'
 
 def signup(request):
@@ -41,15 +41,21 @@ def profile_view(request, user_slug):
     if profile_page_setting.use_custom_page:
         return HttpResponseRedirect(profile_page_setting.url)
 
-    profile_form = UserProfileForm(instance=profile_owner)
-    
+    # model: user -> profile_card
+    profile_form = ProfileForm(instance=profile_owner)
+    profile_card = CVCard(None, _('Basic Information'), _('Edit Basic Information'), None, 'profile', False, list(zip([], [])), profile_owner, profile_form)
+
+    # model:user -> contact_card
+    contact_form = ContactForm(instance=profile_owner)
+    contact_card = CVCard(None, _('Contact Information'), _('Edit Contact Information'), None, 'contact', False, list(zip([],[])), profile_owner, contact_form)
+
     # modal: curricumlum vitae
     curriculum_vitae, created = CurriculumVitae.objects.get_or_create(user=profile_owner)
     
     # modal: self introduction
     self_introduction, created = SelfIntroduction.objects.get_or_create(user=profile_owner)
     self_introduction_form = SelfIntroductionForm(instance=self_introduction)
-    self_introduction_card = CVCard(None, '自介', '編輯自介', curriculum_vitae.self_introduction_form_order, 'selfIntroduction', False, list(zip([], [])), self_introduction.self_introduction, self_introduction_form)
+    self_introduction_card = CVCard(None, _('自介'), _('編輯自介'), curriculum_vitae.self_introduction_form_order, 'selfIntroduction', False, list(zip([], [])), self_introduction.self_introduction, self_introduction_form)
     
     # modal: education
     education_form = EducationForm()
@@ -89,6 +95,7 @@ def profile_view(request, user_slug):
         card_form = SelfDefinedContentForm(instance=card)
         self_defined_content_card = CVCard(card.id, card.title, f'修改{card.title}', card.form_order, f'selfDefinedContent{card.id}', False, list(zip([], [])), card.content, card_form)
         self_defined_content_cards.append((self_defined_content_card, self_defined_content_card.order))
+    
     # setup cards
     card_order = [
         (self_introduction_card, curriculum_vitae.self_introduction_form_order),
@@ -100,26 +107,17 @@ def profile_view(request, user_slug):
     ] + self_defined_content_cards
     card_order = sorted(card_order, key=itemgetter(1))
     cards = [card[0] for card in card_order]
+    
     return render(request, 'profile.html', {
-        'profile_owner': profile_owner, 
-        'profile_form': profile_form, 
+        'profile_card': profile_card,
+        'contact_card': contact_card,
         'cards': cards,
         'empty_self_defined_content_form': self_defined_content_form,
-        #'essential_skill_form': essential_skill_form,
         'slug': user_slug
         })
 
 @login_required
-def save_profile(request):
-    user = request.user
-    if request.method == 'POST':
-        profile_form = UserProfileForm(request.POST, instance=user)
-        if profile_form.is_valid():
-            profile_form.save()
-    return HttpResponseRedirect(f"/profile/{user.slug}")
-
-@login_required
-def save_other_profile(request, modal):
+def save_profile(request, modal):
     def extract_number_from_string(input_string):
         # Use regular expression to find the number at the end of the string
         match = re.search(r'\d+$', input_string)
@@ -132,8 +130,15 @@ def save_other_profile(request, modal):
     
     user = request.user
     card_id = extract_number_from_string(modal)
-    modal = re.sub(r'\d+$', '', modal)
+    modal = re.sub(r'-\d+$', '', modal)
     if request.method == 'POST':
+        if modal == 'profile' or modal == 'contact':
+            profile = User.objects.get(user=user)
+            if modal == 'profile':
+                form = ProfileForm(request.POST, instance=profile)
+            else:
+                form = ContactForm(request.POST, instance=profile)
+
         if modal == 'selfIntroduction':
             self_introduction, created = SelfIntroduction.objects.get_or_create(user=user)
             form = SelfIntroductionForm(request.POST, instance=self_introduction)
