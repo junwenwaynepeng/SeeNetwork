@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from .forms import StudentSettingForm, ContactForm, SignUpForm, ProfileForm, SelfIntroductionForm, EducationForm, WorkExperienceForm, EssentialSkillForm, AwardForm, PublicationForm, SelfDefinedContentForm, PrivateSettingForm, ProfilePageSettingForm, ContactForm
 from .models import CustomUser as User
-from .models import WorkExperience, EssentialSkill, Award, Publication, CurriculumVitae, Education, SelfIntroduction, SelfDefinedContent, PrivateSetting, ProfilePageSetting, Contact
+from .models import WorkExperience, EssentialSkill, Award, Publication, CurriculumVitae, Education, SelfIntroduction, SelfDefinedContent, PrivateSetting, ProfilePageSetting
 from operator import itemgetter
 from dataclasses import dataclass
 import json, re
@@ -132,12 +132,11 @@ def save_profile(request, modal):
     card_id = extract_number_from_string(modal)
     modal = re.sub(r'-\d+$', '', modal)
     if request.method == 'POST':
-        if modal == 'profile' or modal == 'contact':
-            profile = User.objects.get(user=user)
-            if modal == 'profile':
-                form = ProfileForm(request.POST, instance=profile)
-            else:
-                form = ContactForm(request.POST, instance=profile)
+        if modal == 'profile':
+            form = ProfileForm(request.POST, instance=user)
+
+        if modal == 'contact':
+            form = ContactForm(request.POST, instance=user)
 
         if modal == 'selfIntroduction':
             self_introduction, created = SelfIntroduction.objects.get_or_create(user=user)

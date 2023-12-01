@@ -3,12 +3,12 @@ from django.contrib.auth.admin import UserAdmin
 from .models import CurriculumVitae, CustomUser, WorkExperience, EssentialSkill, Award, Publication, Education, SelfIntroduction, SelfDefinedContent, ProfilePageSetting, PrivateSetting, StudentSetting
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'student_id', 'department', 'is_staff', 'date_joined', 'slug')
-    search_fields = ('username', 'email', 'first_name', 'last_name', 'student_id', 'department')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined', 'slug')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
         ('Personal info', {
-            'fields': ('first_name', 'last_name', 'email', 'student_id', 'department', 'slug'),
+            'fields': ('first_name', 'last_name', 'email', 'slug'),
         }),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
@@ -19,9 +19,9 @@ class CustomUserAdmin(UserAdmin):
     )
 
 @admin.register(StudentSetting)
-class StudentSetting(admin.ModelAdmin)
+class StudentSetting(admin.ModelAdmin):
     list_display = ('user', 'student_id', 'school', 'department', 'degree')
-    search_fields = ('user')
+    search_fields = ('user',)
 
 @admin.register(SelfIntroduction)
 class SelfIntroductionAdmin(admin.ModelAdmin):

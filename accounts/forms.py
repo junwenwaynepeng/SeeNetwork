@@ -1,10 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.forms import SelectDateWidget
+from django.utils.translation import gettext as _
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.helper import FormHelper
+from crispy_forms.bootstrap import Tab, TabHolder, FormActions
 from .models import CustomUser as User
-from .models import StudentSetting, CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction, PrivateSetting, ProfilePageSetting, Contact
+from .models import StudentSetting, CurriculumVitae, Education, WorkExperience, EssentialSkill, Award, Publication, SelfDefinedContent, SelfIntroduction, PrivateSetting, ProfilePageSetting
 import datetime
 from martor.widgets import MartorWidget
 
@@ -32,7 +34,6 @@ class StudentSettingForm(forms.ModelForm):
         fields = ['student_id', 'department', 'degree', 'school']
 
 class ProfileForm(forms.ModelForm):
-    email = forms.CharField(max_length=254, required=True, widget=forms.EmailInput())
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'nick_name', 'gender', 'email']
@@ -40,7 +41,56 @@ class ProfileForm(forms.ModelForm):
 class ContactForm(forms.ModelForm): 
     class Meta:
         model = User
-        fields = ['facebook', 'twitter', 'instagram', 'linkedin', 'snapchat', 'whatsapp', 'telegram', 'skype', 'discord', 'tiktok', 'line']
+        fields = ['facebook', 'x', 'instagram', 'linkedin', 'whatsapp', 'telegram', 'discord', 'tiktok', 'line', 'calendly', 'github', 'reddit', 'stackoverflow', 'youtube', 'spotify', 'telephone', 'steam', 'twitch', 'orcid', 'google_scholar', 'patreon', 'medium', 'line']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_id = 'contact-modal'
+        self.helper.method = 'post'
+        self.helper.form_action = "/save_profile/contact"
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab(_('Common'),
+                    'instagram',
+                    'facebook',
+                    'x',
+                    'tiktok',
+                    'line',
+                    'telephone',
+                    'whatsapp'
+                ),
+                Tab(_('For work'),
+                    'linkedin',
+                    'calendly',
+                    'github'
+                ),
+                Tab(_('For academe'),
+                    'orcid',
+                    'google_scholar'
+                ),
+                Tab(_('For entertainment'),
+                    'discord',
+                    'tiktok',
+                    'youtube',
+                    'spotify',
+                    'steam',
+                    'twitch',
+                ),
+                Tab(_('Others'),
+                    'reddit',
+                    'stackoverflow',
+                    'patreon',
+                    'medium',
+                    'telegram'
+                ),
+            )
+        )
+        self.helper.add_input(
+            Submit('submit', 'Save', css_class='rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+            )
+        )
+
 
 class SelfIntroductionForm(forms.ModelForm):
     class Meta:
