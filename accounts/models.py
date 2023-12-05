@@ -91,9 +91,9 @@ class ProfilePageSetting(models.Model):
 class StudentSetting(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     student_id = models.CharField(max_length=15, unique=True, blank=True, null=True)
-    school = models.CharField(max_length=50)
+    school = models.CharField(max_length=50, null=True, blank=True)
     department = models.CharField(max_length=50, null=True, blank=True)
-    degree = models.CharField(max_length=20)
+    degree = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return self.user.username

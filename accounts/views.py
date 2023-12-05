@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from .forms import StudentSettingForm, ContactForm, SignUpForm, ProfileForm, SelfIntroductionForm, EducationForm, WorkExperienceForm, EssentialSkillForm, AwardForm, PublicationForm, SelfDefinedContentForm, PrivateSettingForm, ProfilePageSettingForm, ContactForm
 from .models import CustomUser as User
-from .models import WorkExperience, EssentialSkill, Award, Publication, CurriculumVitae, Education, SelfIntroduction, SelfDefinedContent, PrivateSetting, ProfilePageSetting
+from .models import WorkExperience, EssentialSkill, Award, Publication, CurriculumVitae, Education, SelfIntroduction, SelfDefinedContent, PrivateSetting, ProfilePageSetting, StudentSetting
 from operator import itemgetter
 from dataclasses import dataclass
 import json, re
@@ -118,6 +118,7 @@ def profile_view(request, user_slug):
 
 @login_required
 def save_profile(request, modal):
+    
     def extract_number_from_string(input_string):
         # Use regular expression to find the number at the end of the string
         match = re.search(r'\d+$', input_string)
@@ -131,7 +132,9 @@ def save_profile(request, modal):
     user = request.user
     card_id = extract_number_from_string(modal)
     modal = re.sub(r'-\d+$', '', modal)
+    
     if request.method == 'POST':
+    
         if modal == 'profile':
             form = ProfileForm(request.POST, instance=user)
 
@@ -151,6 +154,7 @@ def save_profile(request, modal):
         if modal == 'essentialSkill':
             form = EssentialSkillForm(request.POST)
             all_essential_skill = EssentialSkill.objects.filter(user=user)
+       
             if all_essential_skill:
                 order = max([obj.order for obj in all_essential_skill]) + 1
             else:
@@ -163,6 +167,7 @@ def save_profile(request, modal):
             form = PublicationForm(request.POST)
 
         if modal == 'selfDefinedContent':
+        
             if card_id:
                 self_defined_content = SelfDefinedContent.objects.get(id=card_id) 
                 form = SelfDefinedContentForm(request.POST, instance=self_defined_content)
@@ -178,6 +183,7 @@ def save_profile(request, modal):
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = user
+        
             if modal == 'essentialSkill':
                 obj.order = order
             if modal == 'selfDefinedContent':
@@ -191,6 +197,7 @@ def delete_profile_item(request):
     user = request.user
     data = json.loads(request.body.decode('utf-8'))
     modal = re.sub(r'\d+$', '', data['modal'])
+
     if modal == 'education':
         item = Education.objects.get(id=data['itemId'])
         
@@ -210,15 +217,19 @@ def delete_profile_item(request):
         item = SelfDefinedContent.objects.get(id=data['itemId'])
 
     item.delete()
+
     return redirect('profile_view', user_slug=user.slug)
 
 @login_required
 def save_cv_card_order(request):
+
     def is_self_defined(card_name):
+
         if re.sub(card_name, r'_\d+$', '') == 'self_defined_content':
             return True
         else:
             return False
+
     user = request.user
     new_order = json.loads(request.body.decode('utf-8'))['cvCard']
     new_order = [int(order) for order in new_order]
@@ -227,13 +238,17 @@ def save_cv_card_order(request):
     self_defined_content_cards = [[card, card.form_order] for card in self_defined_content]
     predefined_cards =[[field.name, getattr(curriculum_vitae, field.name)] for field in CurriculumVitae._meta.get_fields() if type(getattr(curriculum_vitae, field.name))==int and field.name!='id']
     cards = sorted(self_defined_content_cards + predefined_cards, key=itemgetter(1))
+
     for card in cards:
+
         if type(card[0]) is str:
             setattr(curriculum_vitae, card[0], new_order.index(card[1]))
         else:
             card[0].form_order = new_order.index(card[1])
             card[0].save()
+
     curriculum_vitae.save()
+
     return JsonResponse({'message': 'mark all notification as read'})
 
 @login_required
@@ -243,27 +258,34 @@ def settings(request):
     private_setting_form = PrivateSettingForm(instance=private_setting)
     profile_page_setting, created = ProfilePageSetting.objects.get_or_create(user=user)
     profile_page_setting_form = ProfilePageSettingForm(instance=profile_page_setting)
-    contact, created = Contact.objects.get_or_create(user=user)
-    contact_form = ContactForm(instance=contact)
+    student_setting, created = StudentSetting.objects.get_or_create(user=user)
+    student_setting_form = StudentSettingForm(instance=student_setting)
     forms = {
         'private': {'title': _('Who can see me'), 'form': private_setting_form},
         'profilePage': {'title': _('Customize Profile Page'), 'form': profile_page_setting_form},
-        'contact': {'title': _('Contact'), 'form': contact_form},
+        'student': {'title': _('Student Information'), 'form': student_setting_form},
     }
+
     return render(request, 'settings.html', {'forms': forms})
 
 @login_required
 def save_setting(request, modal):
     user = request.user
+
     if request.method == 'POST':
+
         if modal == 'private':
             private_setting, created = PrivateSetting.objects.get_or_create(user=user)
             form = PrivateSettingForm(request.POST, instance=private_setting)
+
         if modal == 'profilePage':
             profile_page_setting, created = ProfilePageSetting.objects.get_or_create(user=user)
             form = ProfilePageSettingForm(request.POST, instance=profile_page_setting)
-        if modal == 'contact':
-            contact, created = Contact.objects.get_or_create(user=user)
-            form = ContactForm(request.POST,instance=profile_page_setting)
+
+        if modal == 'student':
+            student_setting, created = StudentSetting.objects.get_or_create(user=user)
+            form = StudentSettingForm(request.POST,instance=student_setting)
+
         form.save()
+
     return HttpResponseRedirect("/settings")

@@ -19,6 +19,7 @@ thefuzz = "*"
 fuzzychinese = "*"
 django-tailwind = {extras = ["reload"], version = "*"}
 django-mdeditor = "*"
+django-floppyforms = "*"
 
 [dev-packages]
 
