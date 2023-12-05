@@ -28,7 +28,6 @@ class Gender(models.TextChoices):
 
 class CustomUser(AbstractUser):
     # Additional fields for the user profile
-
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     nick_name = models.CharField(max_length=30, blank=True, null=True)

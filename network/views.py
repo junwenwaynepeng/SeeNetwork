@@ -99,7 +99,7 @@ def search_users(request):
     query = request.GET.get('q', '')
     user=request.user
     # Perform the search based on the query.
-    results = User.objects.filter(Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(nick_name__icontains=query) | Q(email__icontains=query) | Q(student_id__icontains=query)).exclude(id=user.id)
+    results = User.objects.filter(Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(nick_name__icontains=query) | Q(email__icontains=query)).exclude(id=user.id)
     request_has_sent = list()
     friends = list()
     for result in results:
