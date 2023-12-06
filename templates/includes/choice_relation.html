@@ -1,8 +1,8 @@
 <div class="card mb-3">
     <div class="card-body">
-        <h5 class="card-title">Student ID: {{ user.student_id }}</h5>
-        <p class="card-text">Name: {{ user.first_name }}, {{ user.last_name }}</p>
+        <h5 class="card-title">Name: {{ user.first_name }}, {{ user.last_name }}</h5>
         <p class="card-text">Email: {{ user.email }}</p>
+        <p class="card-text">A.K.A.: {{ user.nick_name }}</p>
         <div id="friend-request" class="d-flex align-items-center">
             <button id="friend-request-button-{{user.id}}" type="button" onclick="friendRequest({{user.id}})" class="btn btn-success btn-sm ms-2">
                 <i id="friend-request-icon-{{user.id}}" class="fa fa-plus-circle"></i><span id="friend-request-text-{{user.id}}"> {% if user in request_has_sent %} Unfollow {% else %} Follow {% endif %}</span>
