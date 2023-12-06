@@ -136,17 +136,18 @@ def home(request):
     return render(request, 'home.html')
 
 def search_users(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get('search', '')
     user=request.user
     # Perform the search based on the query.
+    print(query)
+    print(';')
     results = User.objects.filter(Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(nick_name__icontains=query) | Q(email__icontains=query)).exclude(id=user.id)
     request_has_sent = list()
     friends = list()
     for result in results:
-        if FriendRequest.objects.filter(sender=user.id, receiver=result.id, status="pending").first():
+        friend_request = FriendRequest.objects.filter(sender=user.id, receiver=result.id).first()
+        if friend_request and friend_request.status!=None:
             request_has_sent.append(result)
-        if Relationship.objects.filter(user=user.id, friend=result.id).first():
-            friends.append(result)
 
     return render(
             request, 
@@ -155,7 +156,6 @@ def search_users(request):
                 'results': results, 
                 'query': query, 
                 'request_has_sent': request_has_sent,
-                'friends': friends,
                 })
 
 def send_friend_request(request, user_id):
@@ -164,19 +164,11 @@ def send_friend_request(request, user_id):
             sender = request.user
             receiver = User.objects.get(id=user_id)
             # Check if a friend request already exists
-            friend_request = FriendRequest.objects.filter(
+            friend_request, created = FriendRequest.objects.get_or_create(
                 sender=sender, receiver=receiver
-            ).first()
-            if not friend_request or (friend_request.status==None):
-                # Create a new friend request
-                if not friend_request:
-                    friend_request = FriendRequest(
-                        sender=sender, receiver=receiver, status='pending'
-                    )
-                    friend_request.save()
-                else:
-                    friend_request.status='pending'
-                    friend_request.save()
+            )
+            if not created:
+                friend_request.status='pending'
 
                 # check if the sender is in block list
                 if not friend_request.block_sender:
@@ -187,6 +179,7 @@ def send_friend_request(request, user_id):
                         description=f'{sender} send you a {NotificationVerbs.following.label}',
                         action_object=friend_request
                         )
+            friend_request.save()
             response_data = {'message': 'Friend request sent successfully'}
         except Exception as e:
             response_data = {'message': f'{e}'}
@@ -230,8 +223,8 @@ def confirm_request(request, notification_id):
             friend_request.status = NotificationVerbs.confirm  # Change status to "confirm"
             friend_request.save()  # Save the updated FriendRequest
             Relationship.objects.create(
-                user=request.user,
-                friend=friend_request.sender,
+                user=friend_request.sender,
+                friend=request.user,
             )
             # check if sender is in block list, otherwise, send notify
             if not friend_request.block_sender:
