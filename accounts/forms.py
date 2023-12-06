@@ -10,17 +10,19 @@ from .models import StudentSetting, CurriculumVitae, Education, WorkExperience, 
 import datetime
 from martor.widgets import MartorWidget
 
+
 class PrivateSettingForm(forms.ModelForm):
     class Meta:
         model = PrivateSetting
         fields = ['display_name', 'display_student_id', 'display_nick_name', 'display_gender', 'display_department', 'display_cv']
-        widget ={
-            'display_name': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayName'}),
-            'display_student_id': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayStudentId'}),
-            'display_nick_name': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayNickName'}),
-            'display_gender': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayGender'}),
-            'display_department': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayDepartment'}),
-            'display_cv': forms.NumberInput(attrs={'type': 'range', 'class': 'form-range', 'step': '1', 'min': '0', 'max': '6', 'id':'displayCV'}),
+        range_slider = forms.NumberInput(attrs={'type': 'range', 'min': '0', 'max': '6',  'class': "w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"})
+        widgets = {
+            'display_name': range_slider,
+            'display_student_id': range_slider,
+            'display_nick_name': range_slider,
+            'display_gender': range_slider,
+            'display_department': range_slider,
+            'display_cv': range_slider,
         }
 
 class ProfilePageSettingForm(forms.ModelForm):

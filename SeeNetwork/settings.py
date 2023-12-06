@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django_browser_reload',
     'martor',  # this need to be fixed
     'theme',
+    #'floppyforms',
 ]
 
 TAILWIND_APP_NAME = 'theme'

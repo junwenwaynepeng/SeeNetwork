@@ -2,8 +2,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block stylesheet %}
-  <link rel="stylesheet" href="{% static 'css/dark-light.css' %}">
-  <link rel="stylesheet" href="{% static 'css/drag-drop.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css" integrity="sha512-qveKnGrvOChbSzAdtSs8p69eoLegyh+1hwOMbmpCViIwj7rn4oJjdmMvWOuyQlTOZgTlZA0N2PXA7iA8/2TUYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 {% load user_filter %}
 {% block title %}Settings{% endblock %}
@@ -31,4 +30,35 @@
       </div>
     {% endfor %}
   </div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all input elements with type range
+        var rangeInputs = document.querySelectorAll('input[type="range"]');
+
+        rangeInputs.forEach(function (input) {
+            // Create spans with the specified HTML
+            var spansHTML = `
+                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">0</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-1/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">2</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-2/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">4</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">6</span>
+            `;
+            // Insert the container div after the range input
+            input.insertAdjacentHTML('afterend', spansHTML);  
+        });
+
+        // Select all elements with id starting with 'div_id_'
+        var elements = document.querySelectorAll('[id^="div_id_"]');
+
+        // Loop through the selected elements and log their content
+        elements.forEach(function (element) {
+            element.classList.add('relative');
+        });
+    });
+</script>
+
 {% endblock %}
