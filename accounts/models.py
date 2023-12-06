@@ -72,6 +72,7 @@ class CustomUser(AbstractUser):
 
 class PrivateSetting(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    display_name_on_network = models.BooleanField(default=False)
     display_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     display_student_id = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
     display_nick_name = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(6)])
@@ -102,7 +103,7 @@ def create_other_setting(sender, instance, created, **kwargs):
     if created:
         private_setting = PrivateSetting.objects.create(user=instance)
         profile_page_setting = ProfilePageSetting.objects.create(user=instance)
-        StudentSetting = StudentSetting.objects.create(user=instance)
+        student_setting = StudentSetting.objects.create(user=instance)
 
 class Education(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from accounts.models import CustomUser as User
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
 from .models import Relationship, FriendRequest, NotificationVerbs
 from notifications.signals import notify
 from django.db.models.signals import post_save
@@ -20,6 +20,7 @@ import re
 
 
 def graph(request, option):
+    
     def clean_network_html(html_content: str, del_html_by_pattern: list):
         # Parse the HTML content with BeautifulSoup
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -36,6 +37,7 @@ def graph(request, option):
             for script_element in soup.find_all('script', src=bootstrap_pattern):
                 script_element.decompose()
         return str(soup)
+    
     def find_nodes_within_distance(source: set, relationships: set, edges:set, length: int):
         if length==0:
             return list(source), list(relationships)
@@ -53,38 +55,76 @@ def graph(request, option):
                     edges.discard(edge)
             return find_nodes_within_distance(source, relationships, edges, length-1)
 
+    def rgba_string_to_list(rgba:str):
+        return list(eval(re.sub(r'rgba', '', rgba)))
+
+    def rgba_list_to_string(rgba:list):
+        return f'rgba({rgba[0]},{rgba[1]},{rgba[2]},{rgba[3]})'
     # Create a Network instance
     if option=='digraph':
         net = Network(directed=True)
     else:
         net = Network()
-    G = networkx.DiGraph()
+
+    me = request.user
     # Get all users and their relationships
     users = User.objects.all()
-    relationships = Relationship.objects.all()
-    user = request.user
-
-    if user.is_superuser:
+    relationships = Relationship.objects.all().order_by(
+        Case(
+            When(user__id=me.id, then=Value(0)),
+            When(friend__id=me.id, then=Value(0)),
+            default=Value(1),
+            output_field=IntegerField(),
+        )
+    )
+    net.add_node(me.id, label="Me", color="rgba(255, 99, 71, 1)")
+    users = users.exclude(id=me.id)
+    
+    if me.is_superuser:
         # Add nodes for users
         for user in users:
-            G.add_node(user.id, label=user.username)
+            net.add_node(user.id, label=user.username, color="rgba(84, 99, 71, 0.1)")
 
         # Add edges for relationships
         for relation in relationships:
-            G.add_edge(relation.user.id, relation.friend.id)
+            net.add_edge(relation.user.id, relation.friend.id)
     else:
-        edges = {(relation.user.id, relation.user.username, relation.friend.id, relation.friend.username) for relation in relationships}
-        source, local_relationships = find_nodes_within_distance({(user.id, user.username)}, set(), edges, 2)
-        try:    
-            for node in source:
-                G.add_node(node[0], label=node[1])
-            for relation in local_relationships:
-                G.add_edge(relation[0], relation[2])
-        except Exception as e:
-            return JsonResponse({messages: f'{e}'})
+        nodes = [me.id] + [user.id for user in users]
+        labels = ['Me'] + [user.username if user.privatesetting.display_name_on_network else '' for user in users]
+        colors = [[255, 99, 71, 1]] + [[84, 99, 71, 0.1] for user in users]
+        print(nodes)
+        # edges = {(relation.user.id, relation.user.username, relation.friend.id, relation.friend.username) for relation in relationships}
+        # source, local_relationships = find_nodes_within_distance({(user.id, user.username)}, set(), edges, 2)        
+        for relation in relationships:
+            user = relation.user
+            user_index = nodes.index(user.id)
+            user_rgba = colors[user_index]
+            friend = relation.friend
+            friend_index = nodes.index(friend.id)
+            friend_rgba = colors[friend_index]
+            if user.id==me.id:
+                friend_rgba[3] = (1+friend_rgba[3])/2
+                colors[friend_index] = friend_rgba
+            elif friend.id==me.id:
+                user_rgba[3] = (1+user_rgba[3])/2
+                colors[user_index] = user_rgba
+            elif user_rgba[3]>0.1 and friend_rgba[3]>0.1:
+                friend_rgba[3] = (1+friend_rgba[3])/2
+                colors[friend_index] = friend_rgba
+                user_rgba[3] = (1+user_rgba[3])/2
+                colors[user_index] = user_rgba
+            else:
+                pass
+        colors = [rgba_list_to_string(c) for c in colors]
+        print(colors)
+        net.add_nodes(
+            nodes,
+            label=labels,
+            color=colors
+        )
+        [net.add_edge(relation.user.id, relation.friend.id) for relation in relationships]
 
     # Generate the HTML for the network
-    net.from_nx(G)
     network_html = net.generate_html()
     network_html = clean_network_html(network_html, ['bootstrap'])
     return render(request, 'includes/graph.html', {'network': network_html})
