@@ -32,7 +32,7 @@ urlpatterns = [
     path('unsend_friend_request/<int:user_id>', views.unsend_friend_request, name='unsend_friend_request'),
     path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('confirm_request/<int:notification_id>', views.confirm_request, name='confirm_request'),
-    path('profile/<slug:user_slug>/', accounts_views.profile_view, name='profile_view'),
+    path('profile/<slug:user_slug>', accounts_views.profile_view, name='profile_view'),
     path('settings', accounts_views.settings, name='settings'),
     path('save_profile/<slug:modal>', accounts_views.save_profile, name='save_profile'),
     path('save_cv_card_order', accounts_views.save_cv_card_order, name='save_cv_card_order'),
@@ -48,3 +48,6 @@ urlpatterns = [
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

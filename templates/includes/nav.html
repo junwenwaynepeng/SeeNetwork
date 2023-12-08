@@ -95,15 +95,19 @@
               </svg>
             </button>
             <div id="userMenu" class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="userMenu" tabindex="-1">
-              <div class="py-1" role="none">
-                <a class="text-gray-700 block px-4 py-2 text hover:bg-gray-100" href="{% url 'notifications' %}"  role="menuitem" tabindex="-1" id="menu-item-notification">Notifications</a>
-                <a class="text-gray-700 block px-4 py-2 text hover:bg-gray-100" href="{% url 'profile_view' user_slug=user.slug %}"  role="menuitem" tabindex="-1" id="menu-item-profile">My account</a>
-                <a class="text-gray-700 block px-4 py-2 text hover:bg-gray-100" href="{% url 'network' %}"  role="menuitem" tabindex="-1" id="menu-item-network">Network</a>
-                <a class="text-gray-700 block px-4 py-2 text hover:bg-gray-100" href="{% url 'settings' %}"  role="menuitem" tabindex="-1" id="menu-item-settings">Settings</a>
-              </div>
-              <div class="py-1" role="none">
-                <a class="text-gray-700 block px-4 py-2 text-lg hover:bg-red-200" href="{% url 'logout' %}"   role="menuitem" tabindex="-1" id="menu-item-logOut">Log out</a>
-              </div>
+              {% for div, option in OPTIONS.items %}
+                <div class="py-1" role="none">
+                  {% for key, value in option.items %}
+                      <a class="{{ value.css }}" 
+                        {% if key == "my_account" %}
+                          href='{% url value.view user.slug %}'
+                        {% else %}
+                          href='{% url value.view %}'
+                        {% endif %}  
+                      role="menuitem" tabindex="-1" id="menu-item-{{ value.view }}">{{ value.text }}</a>
+                  {% endfor %}
+                </div>
+              {% endfor %}
             </div>
           </div>
         {% else %}

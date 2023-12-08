@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os, platform
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -45,11 +44,11 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "crispy_forms",
     "crispy_bootstrap5",
-    'tailwind',
+    #'tailwind',
     'django_browser_reload',
     'martor',  # this need to be fixed
-    'theme',
     #'floppyforms',
+    'compressor',
 ]
 
 TAILWIND_APP_NAME = 'theme'
@@ -84,6 +83,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'network.context_processors.options',
             ],
         },
     },
@@ -273,3 +273,43 @@ ALLOWED_HTML_ATTRIBUTES = [
 
 CSRF_COOKIE_HTTPONLY = False
 
+# Setting up django compressor
+
+COMPRESS_ROOT = BASE_DIR / 'static'
+  
+COMPRESS_ENABLED = True
+  
+STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
+
+# Basic Settings of Front Page
+
+OPTIONS = {
+    'div1': {
+        'notifications': {
+            'view': 'notifications',
+            'css': 'text-gray-700 block px-4 py-2 text hover:bg-gray-100',
+            'text': 'Notifications',
+            'icon': None,
+        },
+        'my_account': {
+            'view': 'profile_view',
+            'css': 'text-gray-700 block px-4 py-2 text hover:bg-gray-100',
+            'text': 'My account',
+            'icon': None,
+        },
+        'settings': {
+            'view': 'settings',
+            'css': 'text-gray-700 block px-4 py-2 text hover:bg-gray-100',
+            'text': 'Settings',
+            'icon': None,
+        },
+    },
+    'div2':{
+        'logout': {
+            'view': 'logout',
+            'css': 'text-gray-700 block px-4 py-2 text-lg hover:bg-red-200',
+            'text': 'Log out',
+            'icon': None,
+        },
+    },
+}

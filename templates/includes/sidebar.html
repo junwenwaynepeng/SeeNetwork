@@ -1,0 +1,21 @@
+<div className="fixed top-0 left-0 h-screen w-16 flex flex-col bg-white dark:bg-gray-900 shadow-lg">
+  {% for div, option in OPTIONS.items %}
+    {% for key, value in option.items %}
+      <div className="sidebar-icon group" {% if key == "my_account" %}
+            href='{% url value.view user.slug %}'
+          {% else %}
+            href='{% url value.view %}'
+          {% endif %}  >
+        {{ value.icon }}
+        <span class="sidebar-tooltip group-hover:scale-100" {% if key == "my_account" %}
+            href='{% url value.view user.slug %}'
+          {% else %}
+            href='{% url value.view %}'
+          {% endif %}  >
+          {{ value.text }}
+        </span>
+      </div>
+    {% endfor %}
+    <hr className="sidebar-hr" />;
+  {% endfor %}
+</div>

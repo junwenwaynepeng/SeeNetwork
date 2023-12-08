@@ -1,6 +1,6 @@
 {% load static %}
 {% load crispy_forms_tags %} 
-{% load tailwind_tags %}
+{% load compress %} 
 <!DOCTYPE html>
 <html>
   <head>
@@ -8,7 +8,6 @@
     <title>{% block title %}SeeNetwork{% endblock %}</title>
     {% include 'includes/seo.html' %}
     {% include 'includes/stylesheets.html' %}
-    {% tailwind_css %}
     {# Load the tag library #}
     {% load django_bootstrap5 %}
 
@@ -21,9 +20,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/output.css' %}"> 
+    {% endcompress %} 
     <link href="{% static 'plugins/css/ace.min.css' %}" type="text/css" media="all" rel="stylesheet" />
     <link href="{% static 'plugins/css/resizable.min.css' %}" type="text/css" media="all" rel="stylesheet" />
     <link href="{% static 'martor/css/martor.bootstrap.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+    <link href="{% static 'dicts/styles.css' %}" type="text/css" media="all" rel="stylesheet" />
+
     {% block stylesheet %}{% endblock %}
     <style>
       @import url(https://fonts.googleapis.com/earlyaccess/cwtexming.css);
@@ -37,6 +41,7 @@
   <body class="antialiased text-slate-400 bg-slate-900 justify-center content-center">
     {% block body %}  <!-- HERE -->
       {% include 'includes/nav.html' %}
+      {% include 'includes/sidebar.html' %}
       <div class="container">
         <ol class="breadcrumb my-4">
           {% block breadcrumb %}
