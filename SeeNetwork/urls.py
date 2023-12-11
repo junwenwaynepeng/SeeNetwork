@@ -20,6 +20,7 @@ from accounts import views as accounts_views
 from network import views
 from django.contrib.auth import views as auth_views
 import notifications.urls
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,9 +46,10 @@ urlpatterns = [
     path('martor/', include('martor.urls')),
     path('settings/', accounts_views.settings, name='settings'),
     path('save_setting/<slug:modal>', accounts_views.save_setting, name='save_setting'),
-    path("__reload__/", include("django_browser_reload.urls")),
+    
 ]
 
 if settings.DEBUG:
     from django.conf.urls.static import static
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += path("__reload__/", include("django_browser_reload.urls"))
