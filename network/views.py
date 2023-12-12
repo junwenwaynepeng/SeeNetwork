@@ -273,3 +273,6 @@ def mark_all_as_read(request):
 
 def notifications(request):
     return render(request, 'notifications.html')
+
+def friends(request):
+    return render(request, 'friends.html')

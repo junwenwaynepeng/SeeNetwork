@@ -20,6 +20,7 @@ from accounts import views as accounts_views
 from network import views
 from django.contrib.auth import views as auth_views
 import notifications.urls
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +35,7 @@ urlpatterns = [
     path('confirm_request/<int:notification_id>', views.confirm_request, name='confirm_request'),
     path('profile/<slug:user_slug>', accounts_views.profile_view, name='profile_view'),
     path('settings', accounts_views.settings, name='settings'),
+    path('friends', views.friends, name='friends'),
     path('save_profile/<slug:modal>', accounts_views.save_profile, name='save_profile'),
     path('save_cv_card_order', accounts_views.save_cv_card_order, name='save_cv_card_order'),
     path('delete_profile_item', accounts_views.delete_profile_item, name='delete_profile_item'),

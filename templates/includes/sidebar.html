@@ -1,12 +1,13 @@
-<div className="fixed top-0 left-0 h-screen w-16 flex flex-col bg-white dark:bg-gray-900 shadow-lg">
+<div class="fixed top-0 left-0 h-screen w-16 flex flex-col bg-white dark:bg-gray-900 shadow-lg">
   {% for div, option in OPTIONS.items %}
     {% for key, value in option.items %}
-      <div className="sidebar-icon group" {% if key == "my_account" %}
+      <div class="sidebar-icon group content-evenly">
+        <a  {% if key == "my_account" %}
             href='{% url value.view user.slug %}'
           {% else %}
             href='{% url value.view %}'
-          {% endif %}  >
-        {{ value.icon }}
+          {% endif %}>
+        <svg xmlns="http://www.w3.org/2000/svg" height="31" width="31" viewBox="{{ value.viewBox}}"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path fill="#cdc7ff" d="{{ value.icon_path }}"/></svg>
         <span class="sidebar-tooltip group-hover:scale-100" {% if key == "my_account" %}
             href='{% url value.view user.slug %}'
           {% else %}
@@ -14,8 +15,9 @@
           {% endif %}  >
           {{ value.text }}
         </span>
+      </a>
       </div>
     {% endfor %}
-    <hr className="sidebar-hr" />;
+    <hr class="sidebar-hr" />;
   {% endfor %}
 </div>
