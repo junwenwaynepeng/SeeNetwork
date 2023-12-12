@@ -6,7 +6,10 @@ __pycache__/
 *.so
 local-cdn/
 node_modules/
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 
 # Distribution / packaging
 .Python

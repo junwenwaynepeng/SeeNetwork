@@ -1,7 +1,10 @@
 {
+<<<<<<< HEAD
   "scripts": {
     "dev": "tailwindcss -i static/src/input.css -o static/css/output.css --watch"
   },
+=======
+>>>>>>> origin/main
   "devDependencies": {
     "tailwindcss": "^3.3.6"
   }
